@@ -470,7 +470,8 @@
 					testCells.splice(i,1);
 					i--;
                     testPlanStep++;
-                    changeBallColor(projectColor);    // TODO - use the testCell colors, via testCell Class
+                    changeBallColor(testsColor[testCells[i].name-1]);
+                    // changeBallColor(projectColor);    // TODO - use the testCell colors, via testCell Class
 				}
                 
                 if(testCells.length == 0) 
@@ -497,7 +498,8 @@
 					taskCells.splice(i,1);
 					i--;
                     taskPlanStep++;
-                    changeBallColor(serviceColor);  // TODO - use the taskCell colors, via taskCell Class
+                    changeBallColor(tasksColor[taskCells[i].name-1]);
+                    // changeBallColor(serviceColor);  // TODO - use the taskCell colors, via taskCell Class
 				}
                 
                 if(taskCells.length == 0) 
@@ -549,6 +551,9 @@
 			stage.update();
 		}
 
+        // TODO - 2 - Build UGE Universal Genetics Engine rules  -> any set of rules; rules set <= ~10000 | eg human genes 19~20k
+        // TODO - 1 - Build UGE Universal Grammar Engine / Market rules -> any set of rules; rules set <= ~1000
+        // 0 - Physics Collision rules - Universal Game Engine rules - UGE rules -> any set of rules; rules set <= ~100
 		function checkCollision(ballElement,hitElement)
 		{
 			var leftBorder = (hitElement.x - hitElement.getBounds().width/2);
