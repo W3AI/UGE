@@ -68,26 +68,42 @@
         
         var projectColor = '#000FFF';
         
+        // TODO add borders, border colors, border width, etc, alpha???
+        function cell(color, x, y, width, height, row, col) {
+            this.color = color;
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+            this.row = row;
+            this.col = col;
+        }
+        
+        function testCell() {
+            
+        }
+        
+        // TODO - first replace the cells in the array with pipe | delimited strings for Color|tag|price=Budget/nr functionalities * priorities, etc
          var tests = [
-                        ["","","","","","","","","",""],
-                        ["","","","","","","","","",""],
-                        ["","","","","","","","","",""],
-                        ["","","","","","","","","",""],
-                        ["","","","","","","","","",""],
-                        [1,2,3,4,5,6,7,8,9,10]
+                     ['||'        ,'1|course|2','2|course|3','3|course|4','4|course|5','5|course|6','6|course|7','7|course|8','8|course|9','9|course|10'],
+                     ['0|course|1','1|course|2','2|course|3','3|course|4','4|course|5','5|course|6','6|course|7','7|course|8','8|course|9','9|course|10'],
+                     ['0|course|1','1|course|2','2|course|3','3|course|4','4|course|5','5|course|6','6|course|7','7|course|8','8|course|9','9|course|10'],
+                     ['0|course|1','1|course|2','2|course|3','3|course|4','4|course|5','5|course|6','6|course|7','7|course|8','8|course|9','9|course|10'],
+                     ['0|course|1','1|course|2','2|course|3','3|course|4','4|course|5','5|course|6','6|course|7','7|course|8','8|course|9','9|course|10'],
+                     ['0|course|1','1|course|2','2|course|3','3|course|4','4|course|5','5|course|6','6|course|7','7|course|8','8|course|9','9|course|10']
                     ]; 
         
         var testsColor = [
-                        '#0000ff',
-                        '#1111ff',
-                        '#2222ff',
-                        '#3333ff',
-                        '#4444ff',
-                        '#5555ff',
-                        '#6666ff',
-                        '#7777ff',
-                        '#8888ff',
-                        '#9999ff'
+                        '#F0B2C1',
+                        '#E9AFBE',
+                        '#E3ACBC',
+                        '#DCA9B9',
+                        '#D6A6B7',
+                        '#CFA2B4',
+                        '#C99FB2',
+                        '#C29CAF',
+                        '#BC99AD',
+                        '#B596AA'
                         ];
         
         var testPlanReady = false;      // when testPlanReady is true - we can start execution of plan
@@ -95,26 +111,32 @@
         
         var planed  = [1,2,3,4,5,6,7,8,9,10]
         
+        function taskCell(domain, tags, change, cost, duration, owner, tested) {
+            
+            this.time = new Date();
+            
+        }
+        
         var tasks = [
-                        [1,2,3,4,5,6,7,8,9,10],
-                        ["","","","","","","","","",""],
-                        ["","","","","","","","","",""],
-                        ["","","","","","","","","",""],
-                        ["","","","","","","","","",""],
-                        ["","","","","","","","","",""]
+                     ['0|course|1','1|course|2','2|course|3','3|course|4','4|course|5','5|course|6','6|course|7','7|course|8','8|course|9','9|course|10'],
+                     ['0|course|1','1|course|2','2|course|3','3|course|4','4|course|5','5|course|6','6|course|7','7|course|8','8|course|9','9|course|10'],
+                     ['0|course|1','1|course|2','2|course|3','3|course|4','4|course|5','5|course|6','6|course|7','7|course|8','8|course|9','9|course|10'],
+                     ['0|course|1','1|course|2','2|course|3','3|course|4','4|course|5','5|course|6','6|course|7','7|course|8','8|course|9','9|course|10'],
+                     ['0|course|1','1|course|2','2|course|3','3|course|4','4|course|5','5|course|6','6|course|7','7|course|8','8|course|9','9|course|10'],
+                     ['||'        ,'1|course|2','2|course|3','3|course|4','4|course|5','5|course|6','6|course|7','7|course|8','8|course|9','9|course|10']
                     ];
         
         var tasksColor = [
-                        '#00ff00',
-                        '#11ff11',
-                        '#22ff22',
-                        '#33ff33',
-                        '#44ff44',
-                        '#55ff55',
-                        '#66ff66',
-                        '#77ff77',
-                        '#88ff88',
-                        '#99ff99'
+                        '#ABD3DE',
+                        '#A5CEDA',
+                        '#A0C8D6',
+                        '#9AC3D2',
+                        '#94BDCE',
+                        '#8FB8CB',
+                        '#89B2C7',
+                        '#83ADC3',
+                        '#7EA7BF',
+                        '#78A2BB'
                         ];
         
         var taskPlanDone = false;       // when taskPlanDone is true - we can start next Cycle/Project/Challenge
@@ -438,7 +460,7 @@
 			for(var i=0;i<testCells.length;i++)
 			{
                 // Check if it is the current plan step
-                // console.log("testCell[i].name = " + testCells[i].name);
+                // console.log("testCells[i].name = " + testCells[i].name);
                 // console.log("planStep = " + planStep);
 				if(checkCollision(ball,testCells[i]) && (testCells[i].name == testPlanStep.toString()))
 				{
@@ -606,12 +628,17 @@
 				for(var j = 0;j<problem_rows;j++)
 				{
 					// Adding mapping logic from the tasks matrix - if tasks[i*j] == 1 -> create task cell
-                    if (tests[j][i] != "|") {
+                    if (tests[j][i] != "||") {
                         // for now - later task type and id, etc will come from project spreadsheet via iterationTests[]
                         // test type = value of tests[j][i]-1
                         // test id = tests[j][i]
+                        // createTest(x,y,type,id) - type will be the index of the color and id the text in the cell
+                        // test[0] = color id
+                        // test[1] = change tag eg: 
+                        // test[2] = budget,etc
+                        var test = tests[j][i].split('|');
                           createTest(i*(CELL_WIDTH+BETWEEN_COLS) + PADDING_LEFT,
-                                     j*(CELL_HEIGHT+BETWEEN_ROWS) + PADDING_TOP,tests[j][i]-1,tests[j][i]);
+                                     j*(CELL_HEIGHT+BETWEEN_ROWS) + PADDING_TOP,test[0],test[2]);
                         }
                     
 				}
@@ -634,8 +661,13 @@
                         // for now - later task type and id, etc will come from service spreadsheet via iterationTasks[]
                         // task type = value of tasks[j][i]-1
                         // task id = tasks[j][i]
+                        // createTest(x,y,type,id) - type will be the index of the color and id the text in the cell
+                        // task[0] = color id
+                        // test[1] = change tag eg: 
+                        // test[2] = budget,etc
+                        var task = tasks[j][i].split('|');
 					   createTask(i*(CELL_WIDTH+BETWEEN_COLS) + PADDING_LEFT,
-                                  j*(CELL_HEIGHT+BETWEEN_ROWS) + serviceLine,tasks[j][i]-1,tasks[j][i]); 
+                                  j*(CELL_HEIGHT+BETWEEN_ROWS) + serviceLine,task[0],task[2]); 
                     }
 				}
             // Create Services text
@@ -655,10 +687,12 @@
             
             var text = new createjs.Text();
             
-            var cell = new createjs.Container();
+            var container = new createjs.Container();
             
-            // Create graphical rectangle of the cell
+            // Create graphical rectangle of the container
             var rect = new createjs.Shape();
+            
+            // TODO - might need to change to color and keep type for tags, etc
             if((type >= 0) && (type<=9)) {
                 rect.graphics.beginFill(testsColor[type]);
             } else {
@@ -667,15 +701,15 @@
 	        rect.graphics.drawRect(0, 0, CELL_WIDTH, CELL_HEIGHT); 
 	        rect.graphics.endFill();
 
-            // Adding/linking a text to the cell's rectangle
-            cell.addChild(rect, text);
+            // Adding/linking a text to the container's rectangle
+            container.addChild(rect, text);
             
-	        cell.regX = CELL_WIDTH/2;
-	        cell.regY = CELL_HEIGHT/2;
-	        cell.x = x;
-	        cell.y = y;
-            cell.name = id;
-	        cell.setBounds(cell.regX,cell.regY,CELL_WIDTH,CELL_HEIGHT);
+	        container.regX = CELL_WIDTH/2;
+	        container.regY = CELL_HEIGHT/2;
+	        container.x = x;
+	        container.y = y;
+            container.name = id;
+	        container.setBounds(container.regX,container.regY,CELL_WIDTH,CELL_HEIGHT);
             
             text.set({
                 text: id,
@@ -686,8 +720,8 @@
                 y: CELL_HEIGHT/2
                 });
                 
-	        stage.addChild(cell);
-	        testCells.push(cell);
+	        stage.addChild(container);
+	        testCells.push(container);
 	    }
         
 
@@ -699,9 +733,9 @@
             
             var text = new createjs.Text();
             
-            var cell = new createjs.Container();
+            var container = new createjs.Container();
             
-            // Create graphical rectangle of the cell
+            // Create graphical rectangle of the container
 			var rect = new createjs.Shape();
 	        if((type >= 0) && (type<=9)) {
                 rect.graphics.beginFill(tasksColor[type]);
@@ -711,15 +745,15 @@
 	        rect.graphics.drawRect(0, 0, CELL_WIDTH, CELL_HEIGHT);
 	        rect.graphics.endFill();
             
-            // Adding/linking a text to the cell's rectangle
-            cell.addChild(rect, text);
+            // Adding/linking a text to the container's rectangle
+            container.addChild(rect, text);
 
-	        cell.regX = CELL_WIDTH/2;
-	        cell.regY = CELL_HEIGHT/2;
-	        cell.x = x;
-	        cell.y = y;
-            cell.name = id;
-	        cell.setBounds(cell.regX,cell.regY,CELL_WIDTH,CELL_HEIGHT);
+	        container.regX = CELL_WIDTH/2;
+	        container.regY = CELL_HEIGHT/2;
+	        container.x = x;
+	        container.y = y;
+            container.name = id;
+	        container.setBounds(container.regX,container.regY,CELL_WIDTH,CELL_HEIGHT);
             
             text.set({
                 text: id,
@@ -729,44 +763,44 @@
                 y: CELL_HEIGHT/2
                 });
             
-	        stage.addChild(cell);
-	        taskCells.push(cell);
+	        stage.addChild(container);
+	        taskCells.push(container);
 	    }
 
-		function destroyTestCell(cell)
+		function destroyTestCell(container)
 		{
-			// createjs.Tween.get(cell,{}).to({scaleX:0,scaleY:0}, 500)
-            // createjs.Tween.get(cell,{}).to({scaleX:0.5,scaleY:0.5}, 500)
-            // createjs.Tween.get(cell,{}).to({scaleX:0.1,scaleY:0.1,rotation:90}, 500)
-            createjs.Tween.get(cell,{})
+			// createjs.Tween.get(container,{}).to({scaleX:0,scaleY:0}, 500)
+            // createjs.Tween.get(container,{}).to({scaleX:0.5,scaleY:0.5}, 500)
+            // createjs.Tween.get(container,{}).to({scaleX:0.1,scaleY:0.1,rotation:90}, 500)
+            createjs.Tween.get(container,{})
                 .to({scaleX:scaleTest,scaleY:scaleTest,rotation:(90 + test*planAngle),x:planX,y:planY}, 500);
             test++;
             // Prep values for next test
             planX = planCircleX - planCircleR*Math.cos(test*planRad);
             planY = planCircleY - planCircleR*Math.sin(test*planRad);
 
-			// setTimeout(removeCellFromScreen,30000,cell);  // TODO - to force quick execution of plan while in attention span - 30000 = 30seconds ~ attention span
+			// setTimeout(removeCellFromScreen,30000,container);  // TODO - to force quick execution of plan while in attention span - 30000 = 30seconds ~ attention span
 		}
 
-		function destroyTaskCell(cell)
+		function destroyTaskCell(container)
 		{
-			// createjs.Tween.get(cell,{}).to({scaleX:0,scaleY:0}, 500)
-            // createjs.Tween.get(cell,{}).to({scaleX:0.5,scaleY:0.5}, 500)
-            // createjs.Tween.get(cell,{}).to({scaleX:0.1,scaleY:0.1,rotation:90}, 500)
-            createjs.Tween.get(cell,{})
+			// createjs.Tween.get(container,{}).to({scaleX:0,scaleY:0}, 500)
+            // createjs.Tween.get(container,{}).to({scaleX:0.5,scaleY:0.5}, 500)
+            // createjs.Tween.get(container,{}).to({scaleX:0.1,scaleY:0.1,rotation:90}, 500)
+            createjs.Tween.get(container,{})
                 .to({scaleX:scaleTask,scaleY:scaleTask,rotation:(90 + test*planAngle),x:planX,y:planY}, 500);
             test++;
             // Prep values for next test
             planX = planCircleX - planCircleR*Math.cos(test*planRad);
             planY = planCircleY - planCircleR*Math.sin(test*planRad);
 
-			// setTimeout(removeCellFromScreen,30000,cell);  // TODO - to force quick execution of plan while in attention span - 30000 = 30seconds ~ attention span
+			// setTimeout(removeCellFromScreen,30000,container);  // TODO - to force quick execution of plan while in attention span - 30000 = 30seconds ~ attention span
 		}
 
         
-		function removeCellFromScreen(cell)
+		function removeCellFromScreen(container)
 		{
-			stage.removeChild(cell)
+			stage.removeChild(container)
 		}
 
 		function createBall()
