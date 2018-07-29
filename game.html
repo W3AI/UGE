@@ -45,7 +45,7 @@
 		const BALL_RADIUS = 8;
 		const FULL_X_SPEED = 7;
         
-        const TX_MARKET_STOP = 2;      // For Dev - Nr of transactions/deals/hits after which the Market stops
+        const TX_MARKET_STOP = 5;      // For Dev - Nr of transactions/deals/hits after which the Market stops
         const TKS_STOP = 180;
         
         var tx = 0;     // For Dev - to count nr transactions / hits / collisions with cells of project / services
@@ -524,7 +524,7 @@
                     // changeBallColor(serviceColor);  // TODO - use the taskCell colors, via taskCell Class
 				}
                 
-                if(taskCells.length == 0 || tx>=TX_MARKET_STOP) 
+                if(taskCells.length <= 50) 
                 {   
                     taskPlanDone = true;
                     
@@ -594,7 +594,6 @@
 
 			if((ballLeftBorder<=rightBorder) && (ballRightBorder >= leftBorder) && (ballTopBorder <= bottomBorder) && (ballBottomBorder >= topBorder))
 			{
-
 
 				if((ballTopBorder <= bottomBorder)&&(previousBallTopBorder > bottomBorder))
 				{
