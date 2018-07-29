@@ -51,6 +51,8 @@
         var tx = 0;     // For Dev - to count nr transactions / hits / collisions with cells of project / services
         var tks= 0;     // For Dev - to count nr ticks / calculations of canvas, etc
         
+        var accelerationCalculated = false;
+        
         // TODO - implementing the Expansion of
         // Service Market / Language / Civilization / Universe
         var marketLaw = true;   // when switching/adding to Physics the Market Laws - Attraction to Top Profits / Selfish Gene
@@ -450,7 +452,7 @@
 				return;
 			}
 
-
+// Regular physics
 			if(ball.up)
 			{
 				ball.y -= ball.ySpeed;
@@ -460,50 +462,7 @@
 			{
 				ball.y += ball.ySpeed;
 			}
-
-            // TODO - check if market law apply and calculate an horizontal acceleration that will make the ball hit the highest price/profit cell/rectangle
-            // so the market law will have access to the ordered filtering of the project&service cells and will know the x, y coordinates of the top cell
-            // the ball/message should hold in its data structure the terms of the contract/engagement of the sender (last hit) beside the ball.x and ball.y
-            // var marketLaw = true/false
-            // var nextTask = true/false - similar to ball.up but meaning if next target should be a task/down or test/up
-            // var topService.x, topService.y, topProject.x, topProject.y, ball.x, ball.y deltaX ... ?
-            
-            // SI, FP: Jul 29, 2018
-            // Adding Market Law / Attraction to Profit maximization 
-            if(marketLaw) {
                 
-                tks++;
-                console.log("--- Nr ticks = " + tks);
-                console.log("--- Nr hits = " + tx);
-                
-                // TODO - Get topProjectY,ServiceY from Firestore filter and update vis cells array/matrix as per availability/use, etc
-                var topProjectY = CELL_HEIGHT/2 + CELL_HEIGHT*(problem_rows - 1);
-                var topServiceY = serviceLine;
-                console.log("topProjectY = " + topProjectY);
-                console.log("topServiceY = " + topServiceY);
-                
-                // dY is distance / market gap between prices of Services/Tasks and budgeted Projects/Tests
-                var dY = (topServiceY - CELL_HEIGHT/2) - (topProjectY + CELL_HEIGHT/2);
-                console.log("dY = " + dY);
-                
-                // TODO - Get topX from Firestore filter - for now is the X of last right / 10th column 
-                // assuming service_cols = project_cols = 10
-                var topX = CELL_WIDTH/2 + (service_cols - 1)*CELL_WIDTH;
-                var dTop = topX - ball.x;
-                console.log("topX = " + topX);
-                console.log("dTop = " + dTop);
-                
-                // aX = X Acceleration / attraction to ensure the ball/message hits the top most profitable project/service budget/price
-                var aX = ((dTop*ball.ySpeed - ball.xSpeed*dY)*ball.ySpeed)/(dY*dY);
-                console.log("accelerationX = aX = " + aX);
-                
-                // Update xSpeed
-                ball.xSpeed = ball.xSpeed + aX*166;     // xSpeed = xSpeed + aX * (nr millisecs in a tick?)
-                console.log("ball.xSpeed = " + ball.xSpeed);
-                
-            }
-                
-            // Regular physics
             if(ball.right)
 			 {
 				ball.x += ball.xSpeed;
@@ -512,12 +471,6 @@
 			 {
 				ball.x -= ball.xSpeed;
 			 }
-
-//            if(tks>=TKS_STOP) {
-//                
-//                gameStarted = false;
-//                init();
-//            }
             
             // Check collision w testCells
 			for(var i=0;i<testCells.length;i++)
