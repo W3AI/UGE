@@ -224,6 +224,8 @@
         var service_rows = 6;
         var service_cols = 10; 
         
+        var textCentre = '';
+        
         
 		function init()
 		{
@@ -317,16 +319,18 @@
         function createBackground() {
             
             var bgTxt = new createjs.Text(bgTXT, bgStyle, bgColor);
-            bgTxt.x = bgX;
+            bgTxt.x = stage.canvas.width/2;      // bgX;
+            bgTxt.textAlign = "center";
             bgTxt.y = bgY;
             bgTxt.textBaseline = "alphabetic";
             stage.addChild(bgTxt);
             
-            var text = new createjs.Text(backgroundText, backgroundTextStyle, backgroundTextColor);
-            text.x = bgTextX;
-            text.y = bgTextY;
-            text.textBaseline = "alphabetic";
-            stage.addChild(text);
+            textCentre = new createjs.Text(backgroundText, backgroundTextStyle, backgroundTextColor);
+            textCentre.x = stage.canvas.width/2;     // bgTextX;
+            textCentre.textAlign = "center";
+            textCentre.y = bgTextY;
+            textCentre.textBaseline = "alphabetic";
+            stage.addChild(textCentre);
             
             var textRepo = new createjs.Text(repoText, repoTextStyle, backgroundTextColor);
             textRepo.x = repoTextX;
@@ -346,6 +350,8 @@
 						ball.ySpeed = 5;
 						ball.up = true;
 						ball.right = true;
+                        // update textCentre
+                        textCentre.text = 'plan';
 					}
 		}
 
@@ -452,11 +458,10 @@
 				return;
 			}
 
-// Regular physics
+            // Regular physics
 			if(ball.up)
 			{
 				ball.y -= ball.ySpeed;
-				
 			}
 			else
 			{
@@ -482,6 +487,11 @@
 				{
 					tx++;
                     console.log("--- testCell collision: " + tx);
+                    
+                    // TODO - Calculate Dx/Dy dynamically for both testCells and TaskCells and then make random prices, etc!!!
+                    // TODO - add logic for tests and tasks owners / budget updates, etc
+                    ball.xSpeed = (25/400)*ball.ySpeed; // Yess!!! - calculate the speed raport as tg = Dy / Dx = Vy / Vx
+                    // Vx = Vy*50/400
                     
                     addToScore(100);
 					console.log("Cell Hit / New Score: "+score);
@@ -517,10 +527,10 @@
 					deductFromScore(100);
 					console.log("Service Used / New Score: "+score);
 					destroyTaskCell(taskCells[i]);
+                    changeBallColor(tasksColor[taskCells[i].name-1]);
 					taskCells.splice(i,1);
 					i--;
                     taskPlanStep++;
-                    changeBallColor(tasksColor[taskCells[i].name-1]);
                     // changeBallColor(serviceColor);  // TODO - use the taskCell colors, via taskCell Class
 				}
                 
@@ -573,9 +583,11 @@
 			stage.update();
 		}
 
-        // TODO - 2 - Build UGE Universal Genetics Engine rules  -> any set of rules; rules set <= ~10000 | eg human genes 19~20k
-        // TODO - 1 - Build UGE Universal Grammar Engine / Market rules -> any set of rules; rules set <= ~1000
-        // 0 - Physics Collision rules - Universal Game Engine rules - UGE rules -> any set of rules; rules set <= ~100
+        // TODO - To change Physics Collision rules for Project cells bottom and Service cell top 
+        // to go to the top profit available (status = available) counterpart
+        // TODO - To mark Manual and Automated cells and differentiate availability after an engagement 
+        // - Manual - won't be available during an engagement
+        // Automated - will have availability / bandwidth (MAX) during engagement 
 		function checkCollision(ballElement,hitElement)
 		{
 			var leftBorder = (hitElement.x - hitElement.getBounds().width/2);
@@ -600,6 +612,14 @@
 					//Hit from the bottom
 					ballElement.up = false;
 					ballElement.y = bottomBorder + BALL_RADIUS;
+                    // TODO - try market direction as angle to top profit cell for Manual 
+                    // ballElement.x = ballElement.lastX + ballElement.xSpeed;  // Math.cos(Math.atan(50/500))
+                    // ballElement.y = ballElement.y + ballElement.ySpeed*Math.sin(Math.atan(50/500));
+//                    console.log("- ballElement.lastX = "+ballElement.lastX);
+//                    console.log("- ballElement.xSpeed = "+ballElement.xSpeed);
+//                    console.log("- Math.atan(250/500) = "+Math.atan(250/500));
+//                    console.log("- Math.cos(Math.atan(500/500)) = "+Math.cos(Math.atan(250/500)));
+//                    console.log("--- ballElement.x = "+ballElement.x);
 				}
 
 				if((ballBottomBorder >= topBorder)&&(previousBallBottomBorder<topBorder))
@@ -671,7 +691,8 @@
             
             // Create Challenges text
             var textChallenges = new createjs.Text(challangeText, backgroundTextStyle, csTextColor);
-            textChallenges.x = cTextX;
+            textChallenges.x = stage.canvas.width/2;      // cTextX;
+            textChallenges.textAlign = "center";
             textChallenges.y = cTextY;
             textChallenges.textBaseline = "alphabetic";
             stage.addChild(textChallenges);
@@ -698,7 +719,8 @@
 				}
             // Create Services text
             var textServices = new createjs.Text(serviceText, backgroundTextStyle, csTextColor);
-            textServices.x = sTextX;
+            textServices.x = stage.canvas.width/2;      
+            textServices.textAlign = "center";
             textServices.y = sTextY;
             textServices.textBaseline = "alphabetic";
             stage.addChild(textServices);
