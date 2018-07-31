@@ -514,39 +514,52 @@
             // Check collision w testCells
 			for(var i=0;i<testCells.length;i++)
 			{
+                
                 // Check if it is the current plan step
-                // console.log("testCells[i].name = " + testCells[i].name);
-                // console.log("planStep = " + planStep);
-				if(checkCollision(ball,testCells[i]) && (testCells[i].type == testPlanStep.toString()))
+				if( checkCollision(ball,testCells[i]) )
 				{
-					tx++;
+					
+                    // TODO - add Dev/Test mode logic
+                    tx++;
                     console.log("--- testCell collision: " + tx);
                     
-                    // TODO - Calculate dynamically xSpeed/ySpeed based on positions of best profit to check first
+                    ball.sender = "testCell " + i;
+                    console.log("ball.sender = " + ball.sender);
                     
-                    // for both testCells and TaskCells and then make random prices, etc!!!
-                    // TODO - add logic for tests and tasks owners / budget updates, etc
-                    // ###################### <<<<<<<<<<<<<<< <<<<<<<<<<<<<<<< <<<<<<<<<<<<<<<<<<<<<<<< <<<<<<<<<<      !!!!!!!
-                    
-                    ball.xSpeed = (25/400)*ball.ySpeed; // Yess!!! - calculate the speed raport as tg = Dy / Dx = Vy / Vx
-                    // Vx = Vy*50/400
-                    
-                    addToScore(100);
-					console.log("Cell Hit / New Score: "+score);
-					destroyTestCell(testCells[i]);
-					testCells.splice(i,1);
-					i--;
-                    testPlanStep++;
                     // TODO - use ? undefined ball color to show ?! the "INVISIBLE HAND" of the market
                     changeBallColor(testsColor[testCells[i].type]); // if color undefined then ball exists and works but invisible
-                    // changeBallColor(projectColor);    // TODO - use the testCell colors, via testCell Class
+                    
+                    // Check if it is the current plan step
+                    if(testCells[i].type == testPlanStep.toString()) 
+                    {
+                    
+                        // TODO - Calculate dynamically xSpeed / ySpeed based on positions of best profit to check first
+                        // TODO - Add "negotiation" message to the ball: price, id, reference, tags, owners?, etc
+                    
+                        // for both testCells and TaskCells and then make random prices, etc!!!
+                        // TODO - add logic for tests and tasks owners / budget updates, etc
+                        // ###################### <<<<<<<<<<<<<<< <<<<<<<<<<<<<<<< <<<<<<<<<<<<<<<<<<<<<<<< <<<<<<<<<<      !!!!!!!
+                    
+                        ball.xSpeed = (25/400)*ball.ySpeed; // Yess!!! - calculate the speed raport as tg = Dy / Dx = Vy / Vx
+                        // Vx = Vy*50/400
+                    
+                        // TODO - Add logic for when to update score and destroy cell
+                        addToScore(100);
+					    console.log("Cell Hit / New Score: "+score);
+					    destroyTestCell(testCells[i]);
+                    
+					    testCells.splice(i,1);
+					    i--;
+                    
+                        testPlanStep++;
+                        
+                    }
+                    
 				}
                 
                 if(testCells.length==0 || testPlanStep>=10) 
                 {
-                    // gameStarted = false;
-                    // lives += 50;
-                    // init();
+                    // gameStarted = false; // lives += 50; // init();
                     
                     testPlanReady = true;
                     // update textCentre
@@ -560,20 +573,33 @@
             // Change services to taskCells
 			for(var i=0;i<taskCells.length;i++)
 			{
-				if(checkCollision(ball,taskCells[i]) && (taskCells[i].type == taskPlanStep.toString()) && testPlanReady)
+				if( checkCollision(ball,taskCells[i]) )
 				{
+                    
+                    // TODO - add Dev/Test mode logic
                     tx++;
                     console.log("--- taskCell collision: " + tx);
                     
-                    // ToDo - to add some more logic for taskCells: available or not etc, cost - to be done in spreadsheets
-					deductFromScore(100);
-					console.log("Service Used / New Score: "+score);
-					destroyTaskCell(taskCells[i]);
+                    ball.sender = "taskCell " + i;
+                    console.log("ball.sender = " + ball.sender);
+                    
                     changeBallColor(tasksColor[taskCells[i].type]);
-					taskCells.splice(i,1);
-					i--;
-                    taskPlanStep++;
-                    // changeBallColor(serviceColor);  // TODO - use the taskCell colors, via taskCell Class?
+                    
+                    // Check if it is the current plan step 
+                    if( (taskCells[i].type == taskPlanStep.toString()) && testPlanReady)
+                    {
+                    
+                        // ToDo - to add some more logic for taskCells: available or not etc, cost - to be done in spreadsheets
+                        // TODO - Add logic for when to update score and destroy cell
+					    deductFromScore(100);
+					    console.log("Service Used / New Score: "+score);
+					    destroyTaskCell(taskCells[i]);
+                    
+					    taskCells.splice(i,1);
+					    i--;
+                    
+                        taskPlanStep++;
+                    }
 				}
                 
                 if(taskCells.length <= 50) 
@@ -721,8 +747,8 @@
                         // test type = value of tests[j][i]-1
                         // test id = tests[j][i]
                         // createTest(x,y,type,id) - type will be the index of the color and id the text in the cell
-                        // test[0] = color id
-                        // test[1] = change tag eg: - for demo could be just change or change(p) change1 - changeId - change1, change2, change3 
+                        // test[0] = color / id
+                        // test[1] = change tag eg: - for demo could be just change or change(p) change - changeId - change1, change2, change3 
                         // test[2] = budget, price, etc
                         var test = tests[j][i].split('|');
                           createTest(i*(CELL_WIDTH+BETWEEN_COLS) + PADDING_LEFT,
@@ -913,6 +939,18 @@
 			ball.ySpeed = 0;
 			ball.lastX = 0;
 			ball.lastY = 0;
+            
+            // Additional ball fields to use in negotiating and planning a service deal
+            ball.sender = "";       // the test/project or task/service cell ids
+            ball.senderType = "";   // test/project/demand or task/service/offer - TODO - decide between i/o or p/s for project/service
+            ball.destination = "";  // some reference id, position, etc of the destination cell
+            ball.color = "";        // color of the last hitted cell
+            ball.message = "";      // data message for destination 
+            ball.command = "";      // command message for destination
+            
+            // TODO - add ball container to include on top of the ball the last collosion/senderType: 
+            // "i" (input) or "p" for project/tests 
+            // and "o" (output) or "s" for service/tasks
 		}
         
         // TODO - Change Ball to Message
@@ -932,6 +970,14 @@
 			newball.lastX = ball.lastX;
 			newball.lastY = ball.lastY;
             
+            // Additional ball fields to use in negotiating and planning a service deal
+            newball.sender      = ball.sender;       // the test/project or task/service cell ids
+            newball.senderType  = ball.senderType;   // test/project/demand or task/service/offer - TODO - decide between i/o or p/s for project/service
+            newball.destination = ball.destination;  // some reference id, position, etc of the destination cell
+            newball.color       = ball.color;        // color of the last hitted cell
+            newball.message     = ball.message;      // data message for destination 
+            newball.command     = ball.command;      // command message for destination
+            
             stage.addChild(newball);
             stage.removeChild(ball);
             
@@ -942,12 +988,20 @@
             ball.x = newball.x;
             ball.y = newball.y;
             
-            ball.up = newball.up;
-			ball.right = newball.right;
-			ball.xSpeed = newball.xSpeed;
-			ball.ySpeed = newball.ySpeed;
-			ball.lastX = newball.lastX;
-			ball.lastY = newball.lastY;
+            ball.up      = newball.up;
+			ball.right   = newball.right;
+			ball.xSpeed  = newball.xSpeed;
+			ball.ySpeed  = newball.ySpeed;
+			ball.lastX   = newball.lastX;
+			ball.lastY   = newball.lastY;
+            
+            // Additional ball fields to use in negotiating and planning a service deal
+            ball.sender      = newball.sender;       // the test/project or task/service cell ids
+            ball.senderType  = newball.senderType;   // test/project/demand or task/service/offer - TODO - decide between i/o or p/s for project/service
+            ball.destination = newball.destination;  // some reference id, position, etc of the destination cell
+            ball.color       = newball.color;        // color of the last hitted cell
+            ball.message     = newball.message;      // data message for destination 
+            ball.command     = newball.command;      // command message for destination            
             
             stage.addChild(ball);
             stage.removeChild(newball);
