@@ -190,6 +190,16 @@
         var sTextX = 165;
         var sTextY = 640;
         
+        var bgTxtU  = "universal";
+        var bgTxtUx = 61;
+        var bgTxtUy = 430;          // 353; - is for central horizontal text mddle of 'U' and on middle line of 'E'
+        
+        var bgTxtG  = "game";       // 'start' ?
+        var bgTxtGx = 255;          // Should this be textAlign Center?
+        
+        var bgTxtE  = "engine";
+        var bgTxtEx = 435;
+        
         var bgTXT = "UGE";
         var bgX = -10;
         var bgY = 433;
@@ -197,7 +207,7 @@
         var bgStyle = "260px Arial";
         
         var csTextColor = "whitesmoke";     // "whitesmoke"; 
-        var backgroundText = "ideas";
+        var backgroundText = "idea";
         var backgroundTextColor = "#ccc";
         var backgroundTextStyle = "60px Arial";
         var bgTextX = 205;
@@ -325,12 +335,31 @@
 //            bgTxt.textBaseline = "alphabetic";
 //            stage.addChild(bgTxt);
             
+            // TODO - should this be global var? together with "universal" and "engine" texts
             var bg = new createjs.Bitmap('UGE.gif');  
             bg.x = 22; 
             bg.y = 253; 
             stage.addChild(bg);
             
-            textCentre = new createjs.Text(backgroundText, backgroundTextStyle, backgroundTextColor);
+            bgTxtU = new createjs.Text('universal', repoTextStyle, 'whitesmoke');   //  'universal'
+            bgTxtU.x = bgTxtUx;
+            bgTxtU.y = bgTxtUy;
+            bgTxtU.textBaseline = "alphabetic";
+            stage.addChild(bgTxtU);
+  
+            bgTxtG = new createjs.Text('game', repoTextStyle, 'whitesmoke');        //  'game' | 'grammar' | 'genetic'
+            bgTxtG.x = bgTxtGx;
+            bgTxtG.y = bgTxtUy + 2;
+            bgTxtG.textBaseline = "alphabetic";
+            stage.addChild(bgTxtG);
+            
+            bgTxtE = new createjs.Text('engine', repoTextStyle, 'whitesmoke');      //  'engine'
+            bgTxtE.x = bgTxtEx;
+            bgTxtE.y = bgTxtUy;
+            bgTxtE.textBaseline = "alphabetic";
+            stage.addChild(bgTxtE);
+            
+            textCentre = new createjs.Text(backgroundText, backgroundTextStyle, backgroundTextColor); // 'Game', 'ideas', 'plan', 'solve', 'action', 'serve', ...
             textCentre.x = stage.canvas.width/2;     // bgTextX;
             textCentre.textAlign = "center";
             textCentre.y = bgTextY;
@@ -520,6 +549,9 @@
                     // init();
                     
                     testPlanReady = true;
+                    // update textCentre
+                    
+                    textCentre.text = 'action';
                 }
                 
 			}
@@ -541,7 +573,7 @@
 					taskCells.splice(i,1);
 					i--;
                     taskPlanStep++;
-                    // changeBallColor(serviceColor);  // TODO - use the taskCell colors, via taskCell Class
+                    // changeBallColor(serviceColor);  // TODO - use the taskCell colors, via taskCell Class?
 				}
                 
                 if(taskCells.length <= 50) 
