@@ -318,12 +318,17 @@
         
         function createBackground() {
             
-            var bgTxt = new createjs.Text(bgTXT, bgStyle, bgColor);
-            bgTxt.x = stage.canvas.width/2;      // bgX;
-            bgTxt.textAlign = "center";
-            bgTxt.y = bgY;
-            bgTxt.textBaseline = "alphabetic";
-            stage.addChild(bgTxt);
+//            var bgTxt = new createjs.Text(bgTXT, bgStyle, bgColor);
+//            bgTxt.x = stage.canvas.width/2;      // bgX;
+//            bgTxt.textAlign = "center";
+//            bgTxt.y = bgY;
+//            bgTxt.textBaseline = "alphabetic";
+//            stage.addChild(bgTxt);
+            
+            var bg = new createjs.Bitmap('UGE.gif');  
+            bg.x = 22; 
+            bg.y = 253; 
+            stage.addChild(bg);
             
             textCentre = new createjs.Text(backgroundText, backgroundTextStyle, backgroundTextColor);
             textCentre.x = stage.canvas.width/2;     // bgTextX;
