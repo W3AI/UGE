@@ -80,18 +80,52 @@
         
         var projectColor = '#000FFF';
         
-        // TODO add borders, border colors, border width, etc, alpha???
-        function cell(color, x, y, width, height, row, col) {
-            this.color = color;
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
+// TODO - Refactor and add borders, border colors, border width, etc, alpha???
+//        function cell(color, x, y, width, height, row, col) {
+//            this.color = color;
+//            this.x = x;
+//            this.y = y;
+//            this.width = width;
+//            this.height = height;
+//            this.row = row;
+//            this.col = col;
+//        }
+        
+        var memTestCells = [];
+        
+        function testCell(owner,status,row,col,x,y,color,type,tag,budget,marketCheck) {
+            
+            this.owner = owner;    // email of owner
+            this.status = status;
             this.row = row;
             this.col = col;
+	        this.x = x;
+	        this.y = y;
+            this.color = color;
+            this.name = tag+'_'+type;
+            this.type = type;
+            this.tag = tag;
+            this.budget = budget;
+            this.marketCheck = marketCheck;   
+            
         }
         
-        function testCell() {
+        var memTaskCells = [];
+        
+        function taskCell(owner,status,row,col,x,y,color,type,tag,price,marketCheck) {
+            
+            this.owner = owner;    // email of owner
+            this.status = status;
+            this.row = row;
+            this.col = col;
+	        this.x = x;
+	        this.y = y;
+            this.color = color;
+            this.name = tag+'_'+type;
+            this.type = type;
+            this.tag = tag;
+            this.price = price;
+            this.marketCheck = marketCheck;           
             
         }
         
@@ -102,7 +136,7 @@
                      ['0|tag|1','1|tag|2','2|tag|3','3|tag|4','4|tag|5','5|tag|6','6|tag|7','7|tag|8','8|tag|9',     '||'],
                      ['0|tag|1','1|tag|2','3|tag|4','3|tag|4','4|tag|5','5|tag|6','6|tag|7','7|tag|8','8|tag|9','9|tag|10'],
                      ['5|tag|6','3|tag|4','2|tag|3','3|tag|4','8|tag|9','5|tag|6','6|tag|7','7|tag|8','8|tag|9','1|tag|2'],
-                     ['0|change|1','1|change|2','2|change|3','3|change|4','4|change|5','5|change|6','6|change|7','7|change|8','8|change|9','9|change|10']
+                     ['0|change|10','1|change|9','2|change|8','3|change|7','4|change|6','5|change|5','6|change|4','7|change|3','8|change|2','9|change|1']
                     ]; 
         
         var testsColor = [
@@ -233,6 +267,9 @@
         // TODO - make cols/types, rows/depth constants? - it will var per level/version - size of Agile cycles
         var service_rows = 6;
         var service_cols = 10; 
+        
+        var currentTestRow = 1;
+        var currentTaskRow = 1;
         
         var textCentre = '';
         
@@ -533,15 +570,82 @@
                     if(testCells[i].type == testPlanStep.toString()) 
                     {
                     
-                        // TODO - Calculate dynamically xSpeed / ySpeed based on positions of best profit to check first
-                        // TODO - Add "negotiation" message to the ball: price, id, reference, tags, owners?, etc
+                        // Find top profitable service available currently in the market - with lowest price for the change/tag
+                        var taskRow = [];
+                        
+                        var marketCheck      = testCells[i].marketCheck;
+                        var marketCheckArray = marketCheck.split(',');
+                        
+                        console.log('------- start Dev Top Market Profit -------');
+                        
+                        // TODO - Create and update mem arrays !!! <<<------------------------------------<<<
+                        
+                        // TODO - Why i = 4 ?
+                        console.log('i = ' + i);
+                        
+                        console.log('currentTaskRow = ' + currentTaskRow);
+                        
+                        console.log('testCells[i].marketCheck = ' + marketCheck);
+                        
+                        // TODO - build array of the tasks on the currentTaskRow NOT to check all tasks 
+                        // TODO - iterate only through marketCheck array !'u' of current test cell and have a formula for k to get only the 
+                        for(k=0; k<taskCells.length; k++)
+                        {
+                            
+                            console.log('taskCells[k].row = ' + taskCells[k].row);
+                            console.log('taskCells[k].col = ' + taskCells[k].col);
+                            console.log('marketCheckArray[taskCells[k].col] = ' + marketCheckArray[taskCells[k].col]);
+                            
+                            // if available && unchecked/updated - include it in the sorting array
+                            if((taskCells[k].row == currentTaskRow) && (marketCheckArray[taskCells[k].col] == 'u'))
+                            {
+                               // add k, price, row, col, x, y
+                               taskRow.push( [ k, taskCells[k].price ] );
+                            }
+                        }
+
+                        // sort ascending
+                        taskRow.sort(function(a, b) {return a[1] - b[1];});
+                        
+                        console.log('taskRow : ' + taskRow);
+                        
+                        // now we now lowest price is in taskRow[0]
+                        var idLoPrice = taskRow[0][0];
+                        
+                        console.log('idLoPrice = ' + idLoPrice);
+                        
+                        // now we calculate dX and dY between taskRow[0] and ball
+                        var dX = taskCells[idLoPrice].x - ball.x;
+                        var dY = taskCells[idLoPrice].y - ball.y;
+                        
+                        console.log("dX = " + dX);
+                        console.log("dY = " + dY);
+                        
+                        // check if ball should go left or right
+                        if (dX > 0) {
+                            ball.right = true;
+                        }   else {
+                            ball.right = false;
+                        }
+                        
+                        console.log('ball.xSpeed = ' + ball.xSpeed);
+                        
+                        ball.xSpeed = (dX/dY)*ball.ySpeed;
+                        
+                        console.log('new ball.xSpeed = ' + ball.xSpeed);
+                        
+                        // TODO - Update ball msg and command fields !!! <<<<------------------------------------<<<< !!!
+                        
+                        // TODO - Update testCells[i].marketCheck    !!!
+                        marketCheckArray[idLoPrice] = 'm';           // 'm' for messaged
+                        
+                        testCells[i].marketCheck = marketCheckArray.toString();
                     
-                        // for both testCells and TaskCells and then make random prices, etc!!!
-                        // TODO - add logic for tests and tasks owners / budget updates, etc
-                        // ###################### <<<<<<<<<<<<<<< <<<<<<<<<<<<<<<< <<<<<<<<<<<<<<<<<<<<<<<< <<<<<<<<<<      !!!!!!!
-                    
-                        ball.xSpeed = (25/400)*ball.ySpeed; // Yess!!! - calculate the speed raport as tg = Dy / Dx = Vy / Vx
-                        // Vx = Vy*50/400
+                        console.log('testCells[i].marketCheck = ' + testCells[i].marketCheck);
+                        
+                        console.log('------- end Dev Top Market Profit -------');  
+                        
+                        // ball.xSpeed = (25/400)*ball.ySpeed; // Yess!!! - calculate the speed raport as tg = Dy / Dx = Vy / Vx
                     
                         // TODO - Add logic for when to update score and destroy cell
                         addToScore(100);
@@ -744,13 +848,16 @@
                         // test[2] = budget, price, etc
                         var test = tests[j][i].split('|');
                         var marketCheck = [];       // marketCheck to hold the status of the check/deals in the current market context - on current pair row
-                        for (k = 0;k<service_rows;k++){marketCheck.push('u')}
+                        for (k = 0;k<problem_cols;k++){marketCheck.push('u')}
                         // TODO - write code to get the email from UGE Teams app
-                          createTest('email',
+                          createTest(
+                                     'email',
                                      '!planned',
-                                     j+1, i+1,
+                                     j+1, 
+                                     i+1,
                                      i*(CELL_WIDTH+BETWEEN_COLS) + PADDING_LEFT,
                                      j*(CELL_HEIGHT+BETWEEN_ROWS) + PADDING_TOP,
+                                     testsColor[test[0]],
                                      test[0],
                                      test[1],
                                      test[2],
@@ -785,13 +892,16 @@
                         // test[2] = budget,price etc
                         var task = tasks[j][i].split('|');
                         var marketCheck = [];      // marketCheck to hold the status of the check/deals in the current market context - on current pair row
-                        for (k = 0;k<service_rows;k++){marketCheck.push('u')}
+                        for (k = 0;k<service_cols;k++){marketCheck.push('u')}
                         // TODO - write code to get the email from UGE Teams app
-					   createTask('email',
+					   createTask(
+                                  'email',
                                   'available',
-                                  j+1, i+1,
+                                  j+1, 
+                                  i+1,
                                   i*(CELL_WIDTH+BETWEEN_COLS) + PADDING_LEFT,
                                   j*(CELL_HEIGHT+BETWEEN_ROWS) + serviceLine,
+                                  tasksColor[task[0]],
                                   task[0],
                                   task[1],
                                   task[2],
@@ -809,7 +919,7 @@
             
 		}
 
-		function createTest(owner,status,row,col,x,y,type,tag,budget,marketCheck)
+		function createTest(owner,status,row,col,x,y,color,type,tag,budget,marketCheck)
 		{
 			var test = testOrder;  // TODO test as an object w properties from project sheet: type, status, priority, etc
             testOrder++;
@@ -843,6 +953,7 @@
             container.col = col;
 	        container.x = x;
 	        container.y = y;
+            container.color = color;
             container.name = tag+'_'+type;
             container.type = type;
             container.tag = tag;
@@ -865,7 +976,7 @@
 	    }
         
 
-        function createTask(owner,status,row,col,x,y,type,tag,cost,marketCheck)
+        function createTask(owner,status,row,col,x,y,color,type,tag,price,marketCheck)
 		{
             var task = taskOrder;  // TODO task as an object w properties from service sheet: type, availability, cost, etc
             taskOrder++;
@@ -877,6 +988,8 @@
             
             // Create graphical rectangle of the container
 			var rect = new createjs.Shape();
+            
+            // TODO - refactor color
 	        if((type >= 0) && (type<=9)) {
                 rect.graphics.beginFill(tasksColor[type]);
             } else {
@@ -897,10 +1010,11 @@
             container.col = col;
 	        container.x = x;
 	        container.y = y;
+            container.color = color;
             container.name = tag+'_'+type;
             container.type = type;
             container.tag = tag;
-            container.cost = cost;
+            container.price = price;
             container.marketCheck = marketCheck;
 
 	        container.setBounds(container.regX,container.regY,CELL_WIDTH,CELL_HEIGHT);
