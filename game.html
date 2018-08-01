@@ -178,10 +178,10 @@
         // SI: Jul 13, 2018
         // ToDo - Add Second text like: Match World's Top Challenges with World's Top Services
         // or          Match World's Top Challenges to your Top Services
-        var repoText = "UGE-Community.W3AI.net";            // UGE-community.firebaseapp.com
-        var repoURL = "https://github.com/W3AI/UGE-Magic";
+        var repoText = "UGE-Teams.W3AI.net";            // UGE-community.firebaseapp.com
+        var repoURL = "https://github.com/W3AI/UGE";
         var repoTextStyle = "16px Arial";
-        var repoTextX = 350;
+        var repoTextX = 390;
         var repoTextY = 514;
         var challangeText = "challenges";
         var cTextX = 135;
@@ -207,7 +207,7 @@
         var bgStyle = "260px Arial";
         
         var csTextColor = "whitesmoke";     // "whitesmoke"; 
-        var backgroundText = "idea";
+        var backgroundText = "ideas";
         var backgroundTextColor = "#ccc";
         var backgroundTextStyle = "60px Arial";
         var bgTextX = 205;
@@ -523,7 +523,7 @@
                     tx++;
                     console.log("--- testCell collision: " + tx);
                     
-                    ball.sender = "testCell " + i;
+                    ball.sender = "testCell " + testCells[i].name;
                     console.log("ball.sender = " + ball.sender);
                     
                     // TODO - use ? undefined ball color to show ?! the "INVISIBLE HAND" of the market
@@ -580,7 +580,7 @@
                     tx++;
                     console.log("--- taskCell collision: " + tx);
                     
-                    ball.sender = "taskCell " + i;
+                    ball.sender = "taskCell " + taskCells[i].name;
                     console.log("ball.sender = " + ball.sender);
                     
                     changeBallColor(tasksColor[taskCells[i].type]);
@@ -680,14 +680,6 @@
 					//Hit from the bottom
 					ballElement.up = false;
 					ballElement.y = bottomBorder + BALL_RADIUS;
-                    // TODO - try market direction as angle to top profit cell for Manual 
-                    // ballElement.x = ballElement.lastX + ballElement.xSpeed;  // Math.cos(Math.atan(50/500))
-                    // ballElement.y = ballElement.y + ballElement.ySpeed*Math.sin(Math.atan(50/500));
-//                    console.log("- ballElement.lastX = "+ballElement.lastX);
-//                    console.log("- ballElement.xSpeed = "+ballElement.xSpeed);
-//                    console.log("- Math.atan(250/500) = "+Math.atan(250/500));
-//                    console.log("- Math.cos(Math.atan(500/500)) = "+Math.cos(Math.atan(250/500)));
-//                    console.log("--- ballElement.x = "+ballElement.x);
 				}
 
 				if((ballBottomBorder >= topBorder)&&(previousBallBottomBorder<topBorder))
@@ -751,7 +743,9 @@
                         // test[1] = change tag eg: - for demo could be just change or change(p) change - changeId - change1, change2, change3 
                         // test[2] = budget, price, etc
                         var test = tests[j][i].split('|');
-                          createTest(i*(CELL_WIDTH+BETWEEN_COLS) + PADDING_LEFT,
+                          createTest('!planned',
+                                     j+1, i+1,
+                                     i*(CELL_WIDTH+BETWEEN_COLS) + PADDING_LEFT,
                                      j*(CELL_HEIGHT+BETWEEN_ROWS) + PADDING_TOP,test[0],test[1],test[2]);
                         }
                     
@@ -772,7 +766,7 @@
 			for(var i = 0;i<service_cols;i++)
 				for(var j = 0;j<service_rows;j++)
 				{
-                    if (tasks[j][i] != "|") {
+                    if (tasks[j][i] != "||") {
                         // for now - later task type and id, etc will come from service spreadsheet via iterationTasks[]
                         // task type = value of tasks[j][i]-1
                         // task id = tasks[j][i]
@@ -781,7 +775,9 @@
                         // test[1] = change tag eg: 
                         // test[2] = budget,price etc
                         var task = tasks[j][i].split('|');
-					   createTask(i*(CELL_WIDTH+BETWEEN_COLS) + PADDING_LEFT,
+					   createTask('available',
+                                  j+1, i+1,
+                                  i*(CELL_WIDTH+BETWEEN_COLS) + PADDING_LEFT,
                                   j*(CELL_HEIGHT+BETWEEN_ROWS) + serviceLine,task[0],task[1],task[2]); 
                     }
 				}
@@ -795,7 +791,7 @@
             
 		}
 
-		function createTest(x,y,type,tag,budget)
+		function createTest(status,row,col,x,y,type,tag,budget)
 		{
 			var test = testOrder;  // TODO test as an object w properties from project sheet: type, status, priority, etc
             testOrder++;
@@ -822,12 +818,17 @@
             
 	        container.regX = CELL_WIDTH/2;
 	        container.regY = CELL_HEIGHT/2;
+            
+            container.status = status;
+            container.row = row;
+            container.col = col;
 	        container.x = x;
 	        container.y = y;
             container.name = tag+'_'+type;
             container.type = type;
             container.tag = tag;
             container.budget = budget;
+
 	        container.setBounds(container.regX,container.regY,CELL_WIDTH,CELL_HEIGHT);
             
             text.set({
@@ -844,7 +845,7 @@
 	    }
         
 
-        function createTask(x,y,type,tag,cost)
+        function createTask(status,row,col,x,y,type,tag,cost)
 		{
             var task = taskOrder;  // TODO task as an object w properties from service sheet: type, availability, cost, etc
             taskOrder++;
@@ -869,12 +870,17 @@
 
 	        container.regX = CELL_WIDTH/2;
 	        container.regY = CELL_HEIGHT/2;
+            
+            container.status = status;
+            container.row = row;
+            container.col = col;
 	        container.x = x;
 	        container.y = y;
             container.name = tag+'_'+type;
             container.type = type;
             container.tag = tag;
             container.cost = cost;
+
 	        container.setBounds(container.regX,container.regY,CELL_WIDTH,CELL_HEIGHT);
             
             text.set({
