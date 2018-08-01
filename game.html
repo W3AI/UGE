@@ -743,10 +743,19 @@
                         // test[1] = change tag eg: - for demo could be just change or change(p) change - changeId - change1, change2, change3 
                         // test[2] = budget, price, etc
                         var test = tests[j][i].split('|');
-                          createTest('!planned',
+                        var marketCheck = [];       // marketCheck to hold the status of the check/deals in the current market context - on current pair row
+                        for (k = 0;k<service_rows;k++){marketCheck.push('u')}
+                        // TODO - write code to get the email from UGE Teams app
+                          createTest('email',
+                                     '!planned',
                                      j+1, i+1,
                                      i*(CELL_WIDTH+BETWEEN_COLS) + PADDING_LEFT,
-                                     j*(CELL_HEIGHT+BETWEEN_ROWS) + PADDING_TOP,test[0],test[1],test[2]);
+                                     j*(CELL_HEIGHT+BETWEEN_ROWS) + PADDING_TOP,
+                                     test[0],
+                                     test[1],
+                                     test[2],
+                                     marketCheck.toString()
+                                    );
                         }
                     
 				}
@@ -775,10 +784,19 @@
                         // test[1] = change tag eg: 
                         // test[2] = budget,price etc
                         var task = tasks[j][i].split('|');
-					   createTask('available',
+                        var marketCheck = [];      // marketCheck to hold the status of the check/deals in the current market context - on current pair row
+                        for (k = 0;k<service_rows;k++){marketCheck.push('u')}
+                        // TODO - write code to get the email from UGE Teams app
+					   createTask('email',
+                                  'available',
                                   j+1, i+1,
                                   i*(CELL_WIDTH+BETWEEN_COLS) + PADDING_LEFT,
-                                  j*(CELL_HEIGHT+BETWEEN_ROWS) + serviceLine,task[0],task[1],task[2]); 
+                                  j*(CELL_HEIGHT+BETWEEN_ROWS) + serviceLine,
+                                  task[0],
+                                  task[1],
+                                  task[2],
+                                  marketCheck.toString()
+                                 ); 
                     }
 				}
             // Create Services text
@@ -791,7 +809,7 @@
             
 		}
 
-		function createTest(status,row,col,x,y,type,tag,budget)
+		function createTest(owner,status,row,col,x,y,type,tag,budget,marketCheck)
 		{
 			var test = testOrder;  // TODO test as an object w properties from project sheet: type, status, priority, etc
             testOrder++;
@@ -819,6 +837,7 @@
 	        container.regX = CELL_WIDTH/2;
 	        container.regY = CELL_HEIGHT/2;
             
+            container.owner = owner;    // email of owner
             container.status = status;
             container.row = row;
             container.col = col;
@@ -828,6 +847,7 @@
             container.type = type;
             container.tag = tag;
             container.budget = budget;
+            container.marketCheck = marketCheck;
 
 	        container.setBounds(container.regX,container.regY,CELL_WIDTH,CELL_HEIGHT);
             
@@ -845,7 +865,7 @@
 	    }
         
 
-        function createTask(status,row,col,x,y,type,tag,cost)
+        function createTask(owner,status,row,col,x,y,type,tag,cost,marketCheck)
 		{
             var task = taskOrder;  // TODO task as an object w properties from service sheet: type, availability, cost, etc
             taskOrder++;
@@ -871,6 +891,7 @@
 	        container.regX = CELL_WIDTH/2;
 	        container.regY = CELL_HEIGHT/2;
             
+            container.owner = owner;    // email of owner
             container.status = status;
             container.row = row;
             container.col = col;
@@ -880,6 +901,7 @@
             container.type = type;
             container.tag = tag;
             container.cost = cost;
+            container.marketCheck = marketCheck;
 
 	        container.setBounds(container.regX,container.regY,CELL_WIDTH,CELL_HEIGHT);
             
