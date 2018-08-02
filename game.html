@@ -93,10 +93,11 @@
         
         var memTestCells = [];
         
-        function TestCell(owner,status,row,col,x,y,color,type,tag,budget,marketCheck) {
+        function TestCell(owner,status,plannedTaskId,row,col,x,y,color,type,tag,budget,marketCheck) {
             
             this.owner = owner;    // email of owner
             this.status = status;
+            this.plannedTaskId = plannedTaskId;
             this.row = row;
             this.col = col;
 	        this.x = x;
@@ -112,10 +113,11 @@
         
         var memTaskCells = [];
         
-        function TaskCell(owner,status,row,col,x,y,color,type,tag,price,marketCheck) {
+        function TaskCell(owner,status,plannedTestId,row,col,x,y,color,type,tag,price,marketCheck) {
             
             this.owner = owner;    // email of owner
             this.status = status;
+            this.plannedTestId = plannedTestId;
             this.row = row;
             this.col = col;
 	        this.x = x;
@@ -574,19 +576,19 @@
                     var marketCheckArray = marketCheck.split(',');
                     console.log('testCells[i].marketCheck = ' + marketCheck);
                     
-                    // START Find BEST of MARKET for Planning <<---------------------------------------------------------<<<< !!!
+                    // START - Find BEST of MARKET for Planning - Tests to Tasks <<-----------------<<<< !!!
                     
-                    console.log('------- start Dev Top Market Profit -------');
+                    console.log('------- start Dev Top Market Profit : Planning - Tests to Tasks -------');
                     
                     // Find top profitable service available currently in the market - with lowest price for the change/tag
                     var taskRow = [];
 
-                    // TODO - build array of the tasks on the currentTaskRow NOT to check all tasks 
-                    // TODO - iterate only through marketCheck array !'u' of current test cell and have a formula for k to get only the 
+                    // TODO - iterate only through marketCheck array !'u' of current test cell and have a formula for k
                     for(var k=0; k<marketCheckArray.length; k++)
                     {
                         // Calculate indexes of cells in the current task row based on currentTaskRow and k = col from marketCheckArray from memTestCells
                         // if available && unchecked/updated - include it in the sorting array
+                        // TODO - UPDATE test/task cells on 'available' and '!planned' <<-------------------------------------<<<<<
                         if((memTaskCells[(currentTaskRow-1)*service_cols + k].status == 'available') && (marketCheckArray[k] == 'u'))
                         {
                            // add k, price
@@ -594,73 +596,81 @@
                         }
                     }
 
-                    // sort ascending
-                    taskRow.sort(function(a, b) {return a[1] - b[1];});
+                    // Check if taskRow NOT empty
+                    if(taskRow.length > 0)
+                    {
+                        
+                        // sort ascending
+                        taskRow.sort(function(a, b) {return a[1] - b[1];});
 
-                    console.log('taskRow : ' + taskRow);
+                        console.log('taskRow : ' + taskRow);
 
-                    // now we now lowest price is in taskRow[0]
-                    var idLoPrice = taskRow[0][0];
-                    console.log('idLoPrice = ' + idLoPrice);
+                        // now we now lowest price is in taskRow[0]
+                        var idLoPrice = taskRow[0][0];
+                        console.log('idLoPrice = ' + idLoPrice);
 
-                    // calculate the id of the Low Price Cell in the memTaskCells
-                    var idLoTaskCell = (currentTaskRow-1)*service_cols + idLoPrice;
-                    console.log('idLoTaskCell = ' + idLoTaskCell);
-                    
-                    console.log('memTaskCells[idLoTaskCell] = ' + memTaskCells[idLoTaskCell]);
-                    
-                    console.log('memTaskCells[idLoTaskCell].x = ' + memTaskCells[idLoTaskCell].x);
-                    console.log('memTaskCells[idLoTaskCell].y = ' + memTaskCells[idLoTaskCell].y);
-                    
-                    console.log('memTaskCells[idLoTaskCell].row = ' + memTaskCells[idLoTaskCell].row);
-                    console.log('memTaskCells[idLoTaskCell].col = ' + memTaskCells[idLoTaskCell].col);                    
-                    
-                    // now we calculate dX and dY between taskRow[0] and ball
-                    var dX = memTaskCells[idLoTaskCell].x - ball.x;
-                    var dY = memTaskCells[idLoTaskCell].y - ball.y;
+                        // calculate the id of the Low Price Cell in the memTaskCells
+                        var idLoTaskCell = (currentTaskRow-1)*service_cols + idLoPrice;
+                        console.log('idLoTaskCell = ' + idLoTaskCell);
 
-                    console.log("ball.x = " + ball.x);
-                    console.log("ball.y = " + ball.y);
-                    
-                    console.log("dX = " + dX);
-                    console.log("dY = " + dY);
-                    
-                    // Calculate speed tangent as abs(dX/dY)
-                    var speedTan = Math.abs(dX/dY);
+                        console.log('memTaskCells[idLoTaskCell] = ' + memTaskCells[idLoTaskCell]);
 
-                    // check if ball should go left or right
-                    if (dX > 0) {
-                        ball.right = true;
-                    }   else {
-                        ball.right = false;
+                        console.log('memTaskCells[idLoTaskCell].x = ' + memTaskCells[idLoTaskCell].x);
+                        console.log('memTaskCells[idLoTaskCell].y = ' + memTaskCells[idLoTaskCell].y);
+
+                        console.log('memTaskCells[idLoTaskCell].row = ' + memTaskCells[idLoTaskCell].row);
+                        console.log('memTaskCells[idLoTaskCell].col = ' + memTaskCells[idLoTaskCell].col);                    
+
+                        // now we calculate dX and dY between taskRow[0] and ball
+                        var dX = memTaskCells[idLoTaskCell].x - ball.x;
+                        var dY = memTaskCells[idLoTaskCell].y - ball.y;
+
+                        console.log("ball.x = " + ball.x);
+                        console.log("ball.y = " + ball.y);
+
+                        console.log("dX = " + dX);
+                        console.log("dY = " + dY);
+
+                        // Calculate speed tangent as abs(dX/dY)
+                        var speedTan = Math.abs(dX/dY);
+
+                        // check if ball should go left or right
+                        if (dX > 0) {
+                            ball.right = true;
+                        }   else {
+                            ball.right = false;
+                        }
+                        console.log('ball.right = ' + ball.right);
+
+                        console.log('ball.xSpeed = ' + ball.xSpeed);
+                        console.log('speedTan = ' + speedTan);
+
+                        ball.xSpeed = speedTan*ball.ySpeed;
+
+                        console.log('new ball.xSpeed = ' + ball.xSpeed);
+
+                        // TODO - Update ball msg and command fields !!! <<<<------------------------------------<<<< !!!
+
+                        // TODO - Update testCells[i].marketCheck    !!!
+                        marketCheckArray[idLoPrice] = 'm';           // 'm' for messaged
+
+                        testCells[i].marketCheck = marketCheckArray.toString();
+
+                        console.log('testCells[i].marketCheck = ' + testCells[i].marketCheck);
+
+                        console.log('------- end Dev Top Market Profit : Planning - Tests to Tasks -------'); 
+                    
+                    } else {
+                        
+                        console.log(' --- >>> taskRow array is Empty');
+                        
                     }
-                    console.log('ball.right = ' + ball.right);
 
-                    console.log('ball.xSpeed = ' + ball.xSpeed);
-                    console.log('speedTan = ' + speedTan);
-
-                    ball.xSpeed = speedTan*ball.ySpeed;
-
-                    console.log('new ball.xSpeed = ' + ball.xSpeed);
-
-                    // TODO - Update ball msg and command fields !!! <<<<------------------------------------<<<< !!!
-
-                    // TODO - Update testCells[i].marketCheck    !!!
-                    marketCheckArray[idLoPrice] = 'm';           // 'm' for messaged
-
-                    testCells[i].marketCheck = marketCheckArray.toString();
-
-                    console.log('testCells[i].marketCheck = ' + testCells[i].marketCheck);
-
-                    console.log('------- end Dev Top Market Profit -------');  
-
-                    // ball.xSpeed = (25/400)*ball.ySpeed; // Yess!!! - calculate the speed raport as tg = Dy / Dx = Vy / Vx
-
-                    // END - Find BEST of MARKET for Planning <<---------------------------------------------------------<<<< !!!
+                    // END - Find BEST of MARKET for Planning - Tests to Tasks <<-----------------<<<< !!!
                     
                     
                     // TODO - Formalize as PRE-PLANNED CASE/ animation?: Check if it is the current plan step
-                    if(testCells[i].type == testPlanStep.toString()) 
+                    if( (testCells[i].type == testPlanStep.toString()) && (testCells[i].row == currentTestRow) ) 
                     {
                                         
                         // TODO - Add logic for when to update score and destroy cell
@@ -668,7 +678,22 @@
 					    console.log("Cell Hit / New Score: "+score);
                         
                         // Update status to 'removed' memTestCells for cell i - beased on row and col of cell i
-                        memTestCells[(row-1)*problem_cols + col - 1].status = 'removed';
+                        // testCells[(currentTestRow-1)*problem_cols + col - 1].status = 'planned';
+                        memTestCells[(currentTestRow-1)*problem_cols + col - 1].status = 'planned';
+                        
+                        // testCells[(currentTestRow-1)*problem_cols + col - 1].plannedTaskId = idLoTaskCell;
+                        memTestCells[(currentTestRow-1)*problem_cols + col - 1].plannedTaskId = idLoTaskCell;
+                        
+                        L('idLoTaskCell',idLoTaskCell);
+                        
+                        // taskCells[idLoTaskCell].status = 'planned';
+                        memTaskCells[idLoTaskCell].status = 'planned';
+                        
+                        // taskCells[idLoTaskCell].plannedTestId = (currentTestRow-1)*problem_cols + col - 1;
+                        memTaskCells[idLoTaskCell].plannedTestId = (currentTestRow-1)*problem_cols + col - 1;
+                        
+                        // i should be = to (currentTestRow-1)*problem_cols + col - 1
+                        console.log('??? ---  i = ' + i + ' ?= ' + ((currentTestRow-1)*problem_cols + col - 1) + ' = (currentTestRow-1)*problem_cols + col - 1');
                         
 					    destroyTestCell(testCells[i]);
                     
@@ -705,13 +730,124 @@
                     tx++;
                     console.log("--- taskCell collision: " + tx);
                     
+                    console.log('i = ' + i);
+
+                    console.log('currentTestRow = ' + currentTestRow);
+                    
                     ball.sender = "taskCell " + taskCells[i].name;
                     console.log("ball.sender = " + ball.sender);
                     
                     changeBallColor(tasksColor[taskCells[i].type]);
                     
+                    var row = taskCells[i].row;
+                    var col = taskCells[i].col;
+                    console.log('taskCell row: ' + row + ' & col: ' + col);
+                    
+                    var marketCheck      = taskCells[i].marketCheck;
+                    var marketCheckArray = marketCheck.split(',');
+                    console.log('taskCells[i].marketCheck = ' + marketCheck);
+                    
+                    
+                    
+                    
+                    
+                    // START - Find BEST of MARKET for Planning - TASKs to TESTs <<-----------------<<<< !!!
+                    
+                    console.log('------- start Dev Top Market Profit : Planning - TASKs to TESTs -------');
+                    console.log('taskCells[i].marketCheck = ' + marketCheck);
+                    
+                    // Find top profitable service available currently in the market - with lowest price for the change/tag
+                    var testRow = [];
+
+                    // TODO - iterate only through marketCheck array !'u' of current test cell and have a formula for k
+                    for(var k=0; k<marketCheckArray.length; k++)
+                    {
+                        // Calculate indexes of cells in the current test row based on currentTestRow and k = col from marketCheckArray from memTaskCells
+                        // if available && unchecked/updated - include it in the sorting array
+                        // TODO - UPDATE test/task cells on 'available' and '!planned' <<-------------------------------------<<<<<
+                        if((memTestCells[(currentTestRow-1)*problem_cols + k].status == '!planned') && (marketCheckArray[k] == 'u'))
+                        {
+                           // add k, price
+                           testRow.push( [ k, memTestCells[(currentTestRow-1)*problem_cols + k].budget ] );
+                        }
+                    }
+
+                    if(testRow.length > 0) {
+                    
+                        // sort descending - Service Providers want to target the top budgeted tests
+                        testRow.sort(function(a, b) {return b[1] - a[1];});
+
+                        console.log('testRow : ' + testRow);
+
+                        // now we now highest budget/priority is in testRow[0]
+                        var idHiPriority = testRow[0][0];
+                        console.log('idHiPriority = ' + idHiPriority);
+
+                        // calculate the id of the High Priority Cell in the memTestCells
+                        var idHiTestCell = (currentTestRow-1)*problem_cols + idHiPriority;
+                        console.log('idHiTestCell = ' + idHiTestCell);
+
+                        console.log('memTestCells[idHiTestCell] = ' + memTestCells[idHiTestCell]);
+
+                        console.log('memTestCells[idHiTestCell].x = ' + memTestCells[idHiTestCell].x);
+                        console.log('memTestCells[idHiTestCell].y = ' + memTestCells[idHiTestCell].y);
+
+                        console.log('memTestCells[idHiTestCell].row = ' + memTestCells[idHiTestCell].row);
+                        console.log('memTestCells[idHiTestCell].col = ' + memTestCells[idHiTestCell].col);                    
+
+                        // now we calculate dX and dY between taskRow[0] and ball
+                        var dX = memTestCells[idHiTestCell].x - ball.x;
+                        var dY = memTestCells[idHiTestCell].y - ball.y;
+
+                        console.log("ball.x = " + ball.x);
+                        console.log("ball.y = " + ball.y);
+
+                        console.log("dX = " + dX);
+                        console.log("dY = " + dY);
+
+                        // Calculate speed tangent as abs(dX/dY)
+                        var speedTan = Math.abs(dX/dY);
+
+                        // check if ball should go left or right
+                        if (dX > 0) {
+                            ball.right = true;
+                        }   else {
+                            ball.right = false;
+                        }
+                        console.log('ball.right = ' + ball.right);
+
+                        console.log('ball.xSpeed = ' + ball.xSpeed);
+                        console.log('speedTan = ' + speedTan);
+
+                        ball.xSpeed = speedTan*ball.ySpeed;
+
+                        console.log('new ball.xSpeed = ' + ball.xSpeed);
+
+                        // TODO - Update ball msg and command fields !!! <<<<------------------------------------<<<< !!!
+
+                        // TODO - Update testCells[i].marketCheck    !!!
+                        marketCheckArray[idHiPriority] = 'm';           // 'm' for messaged
+
+                        taskCells[i].marketCheck = marketCheckArray.toString();
+
+                        console.log('taskCells[i].marketCheck = ' + taskCells[i].marketCheck);
+
+                        console.log('------- end Dev Top Market Profit : Planning - TASKs to TESTs -------');  
+
+                        // END - Find BEST of MARKET for Planning - TASKs to TESTs <<-----------------<<<< !!!                    
+                    
+                    } else {
+                        console.log(' --- >>> testRow array is Empty');
+                    }
+                    
+                    L('i',i);
+                    L('taskCells[i].type',taskCells[i].type);
+                    L('taskPlanStep.toString()',taskPlanStep.toString());
+                    L('testPlanReady', testPlanReady);
+                    L('taskCells[i].status', taskCells[i].status);
+                    
                     // Check if it is the current plan step 
-                    if( (taskCells[i].type == taskPlanStep.toString()) && testPlanReady)
+                    if( (taskCells[i].type == taskPlanStep.toString()) && testPlanReady && (memTaskCells[i].status == 'planned'))
                     {
                     
                         // ToDo - to add some more logic for taskCells: available or not etc, cost - to be done in spreadsheets
@@ -874,6 +1010,7 @@
                           createTest(
                                      'email',
                                      '!planned',
+                                     '',
                                      i+1, 
                                      j+1,
                                      j*(CELL_WIDTH+BETWEEN_COLS) + PADDING_LEFT,
@@ -887,6 +1024,7 @@
                         var testCell = new TestCell(
                                      'email',
                                      '!planned',
+                                     '',
                                      i+1, 
                                      j+1,
                                      j*(CELL_WIDTH+BETWEEN_COLS) + PADDING_LEFT,
@@ -935,6 +1073,7 @@
                                   'available',
                                   i+1, 
                                   j+1,
+                                  '',
                                   j*(CELL_WIDTH+BETWEEN_COLS) + PADDING_LEFT,
                                   i*(CELL_HEIGHT+BETWEEN_ROWS) + serviceLine,
                                   tasksColor[task[0]],
@@ -946,6 +1085,7 @@
                         var taskCell = new TaskCell(
                                      'email',
                                      'available',
+                                     '',
                                      i+1, 
                                      j+1,
                                      j*(CELL_WIDTH+BETWEEN_COLS) + PADDING_LEFT,
@@ -969,7 +1109,7 @@
             
 		}
 
-		function createTest(owner,status,row,col,x,y,color,type,tag,budget,marketCheck)
+		function createTest(owner,status,plannedTaskId,row,col,x,y,color,type,tag,budget,marketCheck)
 		{
 			var test = testOrder;  // TODO test as an object w properties from project sheet: type, status, priority, etc
             testOrder++;
@@ -999,6 +1139,7 @@
             
             container.owner = owner;    // email of owner
             container.status = status;
+            container.plannedTaskId = plannedTaskId;
             container.row = row;
             container.col = col;
 	        container.x = x;
@@ -1026,7 +1167,7 @@
 	    }
         
 
-        function createTask(owner,status,row,col,x,y,color,type,tag,price,marketCheck)
+        function createTask(owner,status,plannedTestId,row,col,x,y,color,type,tag,price,marketCheck)
 		{
             var task = taskOrder;  // TODO task as an object w properties from service sheet: type, availability, cost, etc
             taskOrder++;
@@ -1056,6 +1197,7 @@
             
             container.owner = owner;    // email of owner
             container.status = status;
+            container.plannedTestId = plannedTestId;
             container.row = row;
             container.col = col;
 	        container.x = x;
@@ -1214,6 +1356,13 @@
 		    paddle.setBounds(paddle.regX,paddle.regY,PADDLE_WIDTH,PADDLE_HEIGHT);
 		    stage.addChild(paddle);
 		}
+        
+        // L - Short Logger function
+        function L(text, param) {
+            console.log(' - Log: ' + text + ' = ' + param);
+        }
+        
+        
 	</script>
 </body>
 </html>
