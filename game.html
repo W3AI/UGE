@@ -93,7 +93,7 @@
         
         var memTestCells = [];
         
-        function testCell(owner,status,row,col,x,y,color,type,tag,budget,marketCheck) {
+        function TestCell(owner,status,row,col,x,y,color,type,tag,budget,marketCheck) {
             
             this.owner = owner;    // email of owner
             this.status = status;
@@ -112,7 +112,7 @@
         
         var memTaskCells = [];
         
-        function taskCell(owner,status,row,col,x,y,color,type,tag,price,marketCheck) {
+        function TaskCell(owner,status,row,col,x,y,color,type,tag,price,marketCheck) {
             
             this.owner = owner;    // email of owner
             this.status = status;
@@ -131,9 +131,9 @@
         
         // TODO - first replace the cells in the array with pipe | delimited strings for Color|tag|price=Budget/nr functionalities * priorities, etc
          var tests = [
-                     ['||'     ,'1|tag|2','2|tag|3','3|tag|4','4|tag|5','5|tag|6','6|tag|7','7|tag|8','8|tag|9','9|tag|10'],
-                     ['0|tag|1','1|tag|2','2|tag|3','||'     ,'4|tag|5','5|tag|6','6|tag|7','7|tag|8','8|tag|9','5|tag|6'],
-                     ['0|tag|1','1|tag|2','2|tag|3','3|tag|4','4|tag|5','5|tag|6','6|tag|7','7|tag|8','8|tag|9',     '||'],
+                     ['0|tag|1','1|tag|2','2|tag|3','3|tag|4','4|tag|5','5|tag|6','6|tag|7','7|tag|8','8|tag|9','9|tag|10'],
+                     ['0|tag|1','1|tag|2','2|tag|3','3|tag|4','4|tag|5','5|tag|6','6|tag|7','7|tag|8','8|tag|9','5|tag|6'],
+                     ['0|tag|1','1|tag|2','2|tag|3','3|tag|4','4|tag|5','5|tag|6','6|tag|7','7|tag|8','8|tag|9','9|tag|5'],
                      ['0|tag|1','1|tag|2','3|tag|4','3|tag|4','4|tag|5','5|tag|6','6|tag|7','7|tag|8','8|tag|9','9|tag|10'],
                      ['5|tag|6','3|tag|4','2|tag|3','3|tag|4','8|tag|9','5|tag|6','6|tag|7','7|tag|8','8|tag|9','1|tag|2'],
                      ['0|change|10','1|change|9','2|change|8','3|change|7','4|change|6','5|change|5','6|change|4','7|change|3','8|change|2','9|change|1']
@@ -157,19 +157,13 @@
         
         var planed  = [1,2,3,4,5,6,7,8,9,10]
         
-        function taskCell(domain, tags, change, cost, duration, owner, tested) {
-            
-            this.time = new Date();
-            
-        }
-        
         var tasks = [
                      ['0|change|1','1|change|2','2|change|3','3|change|4','4|change|5','5|change|6','6|change|7','7|change|8','8|change|9','9|change|10'],
                      ['0|tag|1','1|tag|2','2|tag|3','3|tag|4','4|tag|5','5|tag|6','6|tag|7','7|tag|8','8|tag|9','9|tag|10'],
                      ['0|tag|1','1|tag|2','2|tag|3','3|tag|4','4|tag|5','5|tag|6','6|tag|7','7|tag|8','8|tag|9','9|tag|10'],
                      ['0|tag|1','1|tag|2','2|tag|3','3|tag|4','4|tag|5','5|tag|6','6|tag|7','7|tag|8','8|tag|9','9|tag|10'],
                      ['0|tag|1','1|tag|2','2|tag|3','3|tag|4','4|tag|5','5|tag|6','6|tag|7','7|tag|8','8|tag|9','9|tag|10'],
-                     ['||'     ,'1|tag|2','2|tag|3','3|tag|4','4|tag|5','5|tag|6','6|tag|7','7|tag|8','8|tag|9','9|tag|10']
+                     ['0|tag|1','1|tag|2','2|tag|3','3|tag|4','4|tag|5','5|tag|6','6|tag|7','7|tag|8','8|tag|9','9|tag|10']
                     ];
         
         var tasksColor = [
@@ -268,7 +262,7 @@
         var service_rows = 6;
         var service_cols = 10; 
         
-        var currentTestRow = 1;
+        var currentTestRow = 6;     // We start with the bottom of the test grid
         var currentTaskRow = 1;
         
         var textCentre = '';
@@ -307,7 +301,9 @@
 			createPaddle();
 			createBall();
 			createTestGrid(); // Create Problems/Tests grid
-			createTaskGrid(); // Create Services/Tasks grid            
+            console.log('memTestCells.length = ' + memTestCells.length);
+			createTaskGrid(); // Create Services/Tasks grid  
+            console.log('memTaskCells.length = ' + memTaskCells.length);
 			createScoreText();
 
 			stage.canvas.height = window.innerHeight;
@@ -566,6 +562,14 @@
                     // TODO - use ? undefined ball color to show ?! the "INVISIBLE HAND" of the market
                     changeBallColor(testsColor[testCells[i].type]); // if color undefined then ball exists and works but invisible
                     
+                    var row = testCells[i].row;
+                    var col = testCells[i].col;
+                    console.log('testCell row: ' + row + ' & col: ' + col);
+                    
+                    var marketCheck      = testCells[i].marketCheck;
+                    var marketCheckArray = marketCheck.split(',');
+                    console.log('testCells[i].marketCheck = ' + marketCheck);
+                    
                     // Check if it is the current plan step
                     if(testCells[i].type == testPlanStep.toString()) 
                     {
@@ -573,34 +577,22 @@
                         // Find top profitable service available currently in the market - with lowest price for the change/tag
                         var taskRow = [];
                         
-                        var marketCheck      = testCells[i].marketCheck;
-                        var marketCheckArray = marketCheck.split(',');
-                        
                         console.log('------- start Dev Top Market Profit -------');
                         
-                        // TODO - Create and update mem arrays !!! <<<------------------------------------<<<
-                        
-                        // TODO - Why i = 4 ?
                         console.log('i = ' + i);
                         
                         console.log('currentTaskRow = ' + currentTaskRow);
                         
-                        console.log('testCells[i].marketCheck = ' + marketCheck);
-                        
                         // TODO - build array of the tasks on the currentTaskRow NOT to check all tasks 
                         // TODO - iterate only through marketCheck array !'u' of current test cell and have a formula for k to get only the 
-                        for(k=0; k<taskCells.length; k++)
+                        for(var k=0; k<marketCheckArray.length; k++)
                         {
-                            
-                            console.log('taskCells[k].row = ' + taskCells[k].row);
-                            console.log('taskCells[k].col = ' + taskCells[k].col);
-                            console.log('marketCheckArray[taskCells[k].col] = ' + marketCheckArray[taskCells[k].col]);
-                            
+                            // Calculate indexes of cells in the current task row based on currentTaskRow and k = col from marketCheckArray from memTestCells
                             // if available && unchecked/updated - include it in the sorting array
-                            if((taskCells[k].row == currentTaskRow) && (marketCheckArray[taskCells[k].col] == 'u'))
+                            if((memTaskCells[(currentTaskRow-1)*service_cols + k].status == 'available') && (marketCheckArray[k] == 'u'))
                             {
-                               // add k, price, row, col, x, y
-                               taskRow.push( [ k, taskCells[k].price ] );
+                               // add k, price
+                               taskRow.push( [ k, memTaskCells[(currentTaskRow-1)*service_cols + k].price ] );
                             }
                         }
 
@@ -627,6 +619,7 @@
                         }   else {
                             ball.right = false;
                         }
+                        console.log('ball.right = ' + ball.right);
                         
                         console.log('ball.xSpeed = ' + ball.xSpeed);
                         
@@ -650,9 +643,14 @@
                         // TODO - Add logic for when to update score and destroy cell
                         addToScore(100);
 					    console.log("Cell Hit / New Score: "+score);
+                        
+                        // Update status to 'removed' memTestCells for cell i - beased on row and col of cell i
+                        memTestCells[(row-1)*problem_cols + col - 1].status = 'removed';
+                        
 					    destroyTestCell(testCells[i]);
                     
 					    testCells.splice(i,1);
+                        
 					    i--;
                     
                         testPlanStep++;
@@ -834,11 +832,11 @@
 		// Renamed to createTestGrid and added iterationTests array 
 		function createTestGrid()
 		{
-			for(var i = 0;i<problem_cols;i++)
-				for(var j = 0;j<problem_rows;j++)
+			for(var i = 0;i<problem_rows;i++)
+				for(var j = 0;j<problem_cols;j++)
 				{
 					// Adding mapping logic from the tasks matrix - if tasks[i*j] == 1 -> create task cell
-                    if (tests[j][i] != "||") {
+                    if (tests[i][j] != "||") {
                         // for now - later task type and id, etc will come from project spreadsheet via iterationTests[]
                         // test type = value of tests[j][i]-1
                         // test id = tests[j][i]
@@ -846,23 +844,38 @@
                         // test[0] = color / id
                         // test[1] = change tag eg: - for demo could be just change or change(p) change - changeId - change1, change2, change3 
                         // test[2] = budget, price, etc
-                        var test = tests[j][i].split('|');
+                        var test = tests[i][j].split('|');
                         var marketCheck = [];       // marketCheck to hold the status of the check/deals in the current market context - on current pair row
-                        for (k = 0;k<problem_cols;k++){marketCheck.push('u')}
+                        for (k = 0;k<service_cols;k++){marketCheck.push('u')}       // here we look from test/problems to each task/services
                         // TODO - write code to get the email from UGE Teams app
                           createTest(
                                      'email',
                                      '!planned',
-                                     j+1, 
-                                     i+1,
-                                     i*(CELL_WIDTH+BETWEEN_COLS) + PADDING_LEFT,
-                                     j*(CELL_HEIGHT+BETWEEN_ROWS) + PADDING_TOP,
+                                     i+1, 
+                                     j+1,
+                                     j*(CELL_WIDTH+BETWEEN_COLS) + PADDING_LEFT,
+                                     i*(CELL_HEIGHT+BETWEEN_ROWS) + PADDING_TOP,
                                      testsColor[test[0]],
                                      test[0],
                                      test[1],
                                      test[2],
                                      marketCheck.toString()
                                     );
+                        var testCell = new TestCell(
+                                     'email',
+                                     '!planned',
+                                     i+1, 
+                                     j+1,
+                                     j*(CELL_WIDTH+BETWEEN_COLS) + PADDING_LEFT,
+                                     i*(CELL_HEIGHT+BETWEEN_ROWS) + PADDING_TOP,
+                                     testsColor[test[0]],
+                                     test[0],
+                                     test[1],
+                                     test[2],
+                                     marketCheck.toString()
+                                    );
+                        memTestCells.push(testCell);
+                        
                         }
                     
 				}
@@ -879,34 +892,48 @@
         // Renamed to createTaskGrid and added iterationTasks array
         function createTaskGrid()
 		{
-			for(var i = 0;i<service_cols;i++)
-				for(var j = 0;j<service_rows;j++)
+			for(var i = 0;i<service_rows;i++)
+				for(var j = 0;j<service_cols;j++)
 				{
-                    if (tasks[j][i] != "||") {
+                    if (tasks[i][j] != "||") {
                         // for now - later task type and id, etc will come from service spreadsheet via iterationTasks[]
                         // task type = value of tasks[j][i]-1
                         // task id = tasks[j][i]
                         // createTest(x,y,type,id) - type will be the index of the color and id the text in the cell
                         // task[0] = color id
-                        // test[1] = change tag eg: 
-                        // test[2] = budget,price etc
-                        var task = tasks[j][i].split('|');
+                        // task[1] = change tag eg: 
+                        // task[2] = budget,price etc
+                        var task = tasks[i][j].split('|');
                         var marketCheck = [];      // marketCheck to hold the status of the check/deals in the current market context - on current pair row
-                        for (k = 0;k<service_cols;k++){marketCheck.push('u')}
+                        for (k = 0;k<problem_cols;k++){marketCheck.push('u')}   // here we look from task/services to each test/problems
                         // TODO - write code to get the email from UGE Teams app
 					   createTask(
                                   'email',
                                   'available',
-                                  j+1, 
-                                  i+1,
-                                  i*(CELL_WIDTH+BETWEEN_COLS) + PADDING_LEFT,
-                                  j*(CELL_HEIGHT+BETWEEN_ROWS) + serviceLine,
+                                  i+1, 
+                                  j+1,
+                                  j*(CELL_WIDTH+BETWEEN_COLS) + PADDING_LEFT,
+                                  i*(CELL_HEIGHT+BETWEEN_ROWS) + serviceLine,
                                   tasksColor[task[0]],
                                   task[0],
                                   task[1],
                                   task[2],
                                   marketCheck.toString()
-                                 ); 
+                                 );
+                        var taskCell = new TaskCell(
+                                     'email',
+                                     'available',
+                                     i+1, 
+                                     j+1,
+                                     j*(CELL_WIDTH+BETWEEN_COLS) + PADDING_LEFT,
+                                     i*(CELL_HEIGHT+BETWEEN_ROWS) + PADDING_TOP,
+                                     tasksColor[task[0]],
+                                     task[0],
+                                     task[1],
+                                     task[2],
+                                     marketCheck.toString()
+                                    );
+                        memTaskCells.push(taskCell);
                     }
 				}
             // Create Services text
