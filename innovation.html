@@ -187,7 +187,7 @@
         // To build the Project Plan
         var nrTests = 10;
         var test = 0;                   // A test is an instance of a request / demand 
-        var scaleTest = 0.5;            // Sugegsting planning a task is cheaper than the task                      
+        var scaleTest = 1;            // Sugegsting planning a task/test is cheaper than the task - when scale is < 1                     
         
         var nrTasks = 10;
         var task = 0;                   // A task is an instance of a service / offer
@@ -562,9 +562,6 @@
 
                     console.log('currentTaskRow = ' + currentTaskRow);
                     
-                    ball.sender = "testCell " + testCells[i].name;
-                    console.log("ball.sender = " + ball.sender);
-                    
                     // TODO - use ? undefined ball color to show ?! the "INVISIBLE HAND" of the market
                     changeBallColor(testsColor[testCells[i].type]); // if color undefined then ball exists and works but invisible
                     
@@ -695,15 +692,38 @@
                         // i should be = to (currentTestRow-1)*problem_cols + col - 1
                         console.log('??? ---  i = ' + i + ' ?= ' + ((currentTestRow-1)*problem_cols + col - 1) + ' = (currentTestRow-1)*problem_cols + col - 1');
                         
-					    destroyTestCell(testCells[i]);
-                    
-					    testCells.splice(i,1);
                         
-					    i--;
+                        // Experimental !!!! - AUG 4 - Implementing DNA Helix animation / rotation <<------------<<<< DNA helix engine animation !!!
+                        
+                        destroyPairCell(testCells[i], taskCells[ball.sender]);
+                        
+                        testCells.splice(i,1);
+                        i--;
+                        
+                        taskCells.splice(ball.sender,1);
+                        
+//					    destroyTestCell(testCells[i]);
+//                        // TODO - more checking needed to confirm there is a deal / Tx - not just ball/msg coming from a task cell 
+//                        if(ball.senderType == 'RNA') {
+//                            destroyTaskCell(taskCells[ball.sender]);
+//                        }    
+//                        // ball.sender - To get Id of counterpart Deal/Tx Cell from ball/message
+                        
+                    
+					    //  testCells.splice(i,1);
+                        
+					    // i--;
                     
                         testPlanStep++;
                         
                     }
+                    
+                    // Update the Id of the sender Cell for ball/message -- if cell(s) not destroyed
+                    ball.sender = i;                            // Previously was: "testCell " + testCells[i].name;
+                    ball.senderType = 'DNA';                    // TODO - ? Refactor testCells to dnaCell ? and taskCell to rnaCell ?
+                    
+                    console.log("ball.sender = " + ball.sender);
+                    console.log("ball.senderType = " + ball.senderType);
                     
 				}
                 
@@ -733,9 +753,6 @@
                     console.log('i = ' + i);
 
                     console.log('currentTestRow = ' + currentTestRow);
-                    
-                    ball.sender = "taskCell " + taskCells[i].name;
-                    console.log("ball.sender = " + ball.sender);
                     
                     changeBallColor(tasksColor[taskCells[i].type]);
                     
@@ -854,13 +871,29 @@
                         // TODO - Add logic for when to update score and destroy cell
 					    deductFromScore(100);
 					    console.log("Service Used / New Score: "+score);
+                        
+					    // destroyTaskCell(taskCells[i]);
+                        
+                        // Experimental !!!! - AUG 4 - Implementing DNA Helix animation / rotation <<------------<<<< DNA helix engine animation !!!
 					    destroyTaskCell(taskCells[i]);
+                        // TODO - more checking needed to confirm there is a deal / Tx - not just ball/msg coming from a task cell 
+                        if(ball.senderType == 'DNA') {
+                            destroyTestCell(testCell[ball.sender]);
+                        }    
+                        // ball.sender - To get Id of counterpart Deal/Tx Cell from ball/message
                     
 					    taskCells.splice(i,1);
 					    i--;
                     
                         taskPlanStep++;
                     }
+                    
+                    // Update the Id of the sender Cell for ball/message -- if cell(s) not destroyed
+                    ball.sender = i;                                    // Previously was: "taskCell " + taskCells[i].name;
+                    ball.senderType = 'RNA';
+                    
+                    console.log("ball.sender = " + ball.sender);
+                    console.log("ball.senderType = " + ball.senderType);
 				}
                 
                 if(taskCells.length <= 50) 
@@ -1223,6 +1256,33 @@
 	        taskCells.push(container);
 	    }
 
+        // To simulate DNA Helix
+        function destroyPairCell(container1, container2)
+		{
+			// createjs.Tween.get(container,{}).to({scaleX:0,scaleY:0}, 500)
+            // createjs.Tween.get(container,{}).to({scaleX:0.5,scaleY:0.5}, 500)
+            // createjs.Tween.get(container,{}).to({scaleX:0.1,scaleY:0.1,rotation:90}, 500)
+            createjs.Tween.get(container1,{})
+                .to({scaleX:scaleTest,scaleY:scaleTest,rotation:(90 + test*planAngle),x:planX,y:planY}, 500);
+            
+            var helixX = planCircleX - planCircleR*Math.cos(Math.PI + test*planRad);
+            var helixY = planCircleY - planCircleR*Math.sin(Math.PI + test*planRad);
+            
+            createjs.Tween.get(container2,{})
+                .to({scaleX:scaleTest,scaleY:scaleTest,rotation:(90 + 180 + test*planAngle),x:helixX,y:helixY}, 500);
+                    
+            
+            test++;
+            // Prep values for next test
+            planX = planCircleX - planCircleR*Math.cos(test*planRad);
+            planY = planCircleY - planCircleR*Math.sin(test*planRad);
+
+            // setTimeout(removeCellFromScreen,10000,container);  // To create helix depth/rotation? animation
+            // TODO - setTimeout to about nr cols x 1000ms = e.g. = 10 x 1000 = 10000
+            // TODO - ? to force quick execution of plan while in attention span - 30000 = 30seconds ~ attention span
+		}
+        
+        
 		function destroyTestCell(container)
 		{
 			// createjs.Tween.get(container,{}).to({scaleX:0,scaleY:0}, 500)
@@ -1235,7 +1295,9 @@
             planX = planCircleX - planCircleR*Math.cos(test*planRad);
             planY = planCircleY - planCircleR*Math.sin(test*planRad);
 
-			// setTimeout(removeCellFromScreen,30000,container);  // TODO - to force quick execution of plan while in attention span - 30000 = 30seconds ~ attention span
+            // setTimeout(removeCellFromScreen,10000,container);  // To create helix depth/rotation? animation
+            // TODO - setTimeout to about nr cols x 1000ms = e.g. = 10 x 1000 = 10000
+            // TODO - ? to force quick execution of plan while in attention span - 30000 = 30seconds ~ attention span
 		}
 
 		function destroyTaskCell(container)
@@ -1250,7 +1312,9 @@
             planX = planCircleX - planCircleR*Math.cos(test*planRad);
             planY = planCircleY - planCircleR*Math.sin(test*planRad);
 
-			// setTimeout(removeCellFromScreen,30000,container);  // TODO - to force quick execution of plan while in attention span - 30000 = 30seconds ~ attention span
+			// setTimeout(removeCellFromScreen,10000,container);  // To create helix depth/rotation? animation
+            // TODO - setTimeout to about nr cols x 1000ms = e.g. = 10 x 1000 = 10000
+            // TODO - to force quick execution of plan while in attention span - 30000 = 30seconds ~ attention span
 		}
 
         
