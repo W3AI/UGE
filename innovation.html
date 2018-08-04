@@ -19,7 +19,7 @@
     position: absolute;
     }
 </style>
-	<title>UGE Circles</title>
+	<title>UGE Teams</title>
 	<script src="https://code.createjs.com/createjs-2015.05.21.min.js"></script>
 </head>
 <body onload="init();">
@@ -133,12 +133,12 @@
         
         // TODO - first replace the cells in the array with pipe | delimited strings for Color|tag|price=Budget/nr functionalities * priorities, etc
          var tests = [
-                     ['0|bid|1','1|bid|2','2|bid|3','3|bid|4','4|bid|5','5|bid|6','6|bid|7','7|bid|8','8|bid|9','9|bid|10'],
-                     ['0|bid|1','1|bid|2','2|bid|3','3|bid|4','4|bid|5','5|bid|6','6|bid|7','7|bid|8','8|bid|9','5|bid|6'],
-                     ['0|bid|1','1|bid|2','2|bid|3','3|bid|4','4|bid|5','5|bid|6','6|bid|7','7|bid|8','8|bid|9','9|bid|5'],
-                     ['0|bid|1','1|bid|2','3|bid|4','3|bid|4','4|bid|5','5|bid|6','6|bid|7','7|bid|8','8|bid|9','9|bid|10'],
-                     ['5|bid|6','3|bid|4','2|bid|3','3|bid|4','8|bid|9','5|bid|6','6|bid|7','7|bid|8','8|bid|9','1|bid|2'],
-                     ['0|bid|10','1|bid|9','2|bid|8','3|bid|7','4|bid|6','5|bid|5','6|bid|4','7|bid|3','8|bid|2','9|bid|1']
+                     ['0|bid-DNA|1','1|bid-DNA|2','2|bid-DNA|3','3|bid-DNA|4','4|bid-DNA|5','5|bid-DNA|6','6|bid-DNA|7','7|bid-DNA|8','8|bid-DNA|9','9|bid-DNA|10'],
+                     ['0|bid-DNA|1','1|bid-DNA|2','2|bid-DNA|3','3|bid-DNA|4','4|bid-DNA|5','5|bid-DNA|6','6|bid-DNA|7','7|bid-DNA|8','8|bid-DNA|9','5|bid-DNA|6'],
+                     ['0|bid-DNA|1','1|bid-DNA|2','2|bid-DNA|3','3|bid-DNA|4','4|bid-DNA|5','5|bid-DNA|6','6|bid-DNA|7','7|bid-DNA|8','8|bid-DNA|9','9|bid-DNA|5'],
+                     ['0|bid-DNA|1','1|bid-DNA|2','3|bid-DNA|4','3|bid-DNA|4','4|bid-DNA|5','5|bid-DNA|6','6|bid-DNA|7','7|bid-DNA|8','8|bid-DNA|9','9|bid-DNA|10'],
+                     ['5|bid-DNA|6','3|bid-DNA|4','2|bid-DNA|3','3|bid-DNA|4','8|bid-DNA|9','5|bid-DNA|6','6|bid-DNA|7','7|bid-DNA|8','8|bid-DNA|9','1|bid-DNA|2'],
+                     ['0|bid-DNA|10','1|bid-DNA|9','2|bid-DNA|8','3|bid-DNA|7','4|bid-DNA|6','5|bid-DNA|5','6|bid-DNA|4','7|bid-DNA|3','8|bid-DNA|2','9|bid-DNA|1']
                     ]; 
         
         var testsColor = [
@@ -160,12 +160,12 @@
         var planed  = [1,2,3,4,5,6,7,8,9,10]
         
         var tasks = [
-                     ['0|ask|1','1|ask|2','2|ask|3','3|ask|4','4|ask|5','5|ask|6','6|ask|7','7|ask|8','8|ask|9','9|ask|10'],
-                     ['0|ask|1','1|ask|2','2|ask|3','3|ask|4','4|ask|5','5|ask|6','6|ask|7','7|ask|8','8|ask|9','9|ask|10'],
-                     ['0|ask|1','1|ask|2','2|ask|3','3|ask|4','4|ask|5','5|ask|6','6|ask|7','7|ask|8','8|ask|9','9|ask|10'],
-                     ['0|ask|1','1|ask|2','2|ask|3','3|ask|4','4|ask|5','5|ask|6','6|ask|7','7|ask|8','8|ask|9','9|ask|10'],
-                     ['0|ask|1','1|ask|2','2|ask|3','3|ask|4','4|ask|5','5|ask|6','6|ask|7','7|ask|8','8|ask|9','9|ask|10'],
-                     ['0|ask|1','1|ask|2','2|ask|3','3|ask|4','4|ask|5','5|ask|6','6|ask|7','7|ask|8','8|ask|9','9|ask|10']
+                     ['0|ask-RNA|1','1|ask-RNA|2','2|ask-RNA|3','3|ask-RNA|4','4|ask-RNA|5','5|ask-RNA|6','6|ask-RNA|7','7|ask-RNA|8','8|ask-RNA|9','9|ask-RNA|10'],
+                     ['0|ask-RNA|1','1|ask-RNA|2','2|ask-RNA|3','3|ask-RNA|4','4|ask-RNA|5','5|ask-RNA|6','6|ask-RNA|7','7|ask-RNA|8','8|ask-RNA|9','9|ask-RNA|10'],
+                     ['0|ask-RNA|1','1|ask-RNA|2','2|ask-RNA|3','3|ask-RNA|4','4|ask-RNA|5','5|ask-RNA|6','6|ask-RNA|7','7|ask-RNA|8','8|ask-RNA|9','9|ask-RNA|10'],
+                     ['0|ask-RNA|1','1|ask-RNA|2','2|ask-RNA|3','3|ask-RNA|4','4|ask-RNA|5','5|ask-RNA|6','6|ask-RNA|7','7|ask-RNA|8','8|ask-RNA|9','9|ask-RNA|10'],
+                     ['0|ask-RNA|1','1|ask-RNA|2','2|ask-RNA|3','3|ask-RNA|4','4|ask-RNA|5','5|ask-RNA|6','6|ask-RNA|7','7|ask-RNA|8','8|ask-RNA|9','9|ask-RNA|10'],
+                     ['0|ask-RNA|1','1|ask-RNA|2','2|ask-RNA|3','3|ask-RNA|4','4|ask-RNA|5','5|ask-RNA|6','6|ask-RNA|7','7|ask-RNA|8','8|ask-RNA|9','9|ask-RNA|10']
                     ];
         
         var tasksColor = [
@@ -237,9 +237,9 @@
         var bgStyle = "260px Arial";
         
         var csTextColor = "whitesmoke";     // "whitesmoke"; 
-        var backgroundText = "ideas";
+        var backgroundText = "i n n o v a t i o n s";
         var backgroundTextColor = "#ccc";
-        var backgroundTextStyle = "60px Arial";
+        var backgroundTextStyle = "63px Arial";
         var bgTextX = 205;
         var bgTextY = 360;
         
