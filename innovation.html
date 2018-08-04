@@ -1,0 +1,1368 @@
+<html>
+<head>
+    <meta name="viewport" content="user-scalable=no,width=device-width,initial-scale=1 maximum-scale=1.0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="UGE Teams">
+<style>
+    body{
+    background-color: whitesmoke;
+    margin: 0;
+    }
+    #gameWrapper{
+    position: absolute;
+    }
+    canvas, img{
+    -webkit-transform-origin:0px 0px;
+    transform-orgin: 0 0;
+    position: absolute;
+    }
+</style>
+	<title>UGE Circles</title>
+	<script src="https://code.createjs.com/createjs-2015.05.21.min.js"></script>
+</head>
+<body onload="init();">
+    <div id="gameWrapper">
+        <!-- <img id="bg" src="img/bg.jpg"> -->
+        <canvas id="canvas" width="550" height="700" style="border:1px solid #d3d3d3;"></canvas>
+    </div>
+	<script>
+        
+        // -- (( UGE Community Circles / W3AI.net )) --
+        // Stefan Ianta - July 2018 - MIT License 
+        
+		const PADDING_TOP = 13;
+        const PADDING_BOTTOM = 0;
+        const PADDING_LEFT = 27;
+        const BETWEEN_COLS = 1;
+        const BETWEEN_ROWS = 1;
+        
+        const PADDLE_WIDTH = 100;
+		const PADDLE_HEIGHT = 20;
+		const CELL_WIDTH = 54;
+		const CELL_HEIGHT = 25;
+		const BALL_RADIUS = 8;
+		const FULL_X_SPEED = 7;
+        
+        const TX_MARKET_STOP = 5;      // For Dev - Nr of transactions/deals/hits after which the Market stops
+        const TKS_STOP = 180;
+        
+        var tx = 0;     // For Dev - to count nr transactions / hits / collisions with cells of project / services
+        var tks= 0;     // For Dev - to count nr ticks / calculations of canvas, etc
+        
+        var accelerationCalculated = false;
+        
+        // TODO - implementing the Expansion of
+        // Service Market / Language / Civilization / Universe
+        var marketLaw = true;   // when switching/adding to Physics the Market Laws - Attraction to Top Profits / Selfish Gene
+        
+        var canvas;
+		var stage;
+		var paddle;
+		var ball;
+        var newball;    // used to change the color after collision
+        
+		var testCells = [];
+        var testOrder = 0;
+        var iterationTests = [];    // array of requirments/tests objects to keep data: status, change tags, priority/votes/usage, owner, cost, ref, etc
+        
+		var score = 0;
+		var lives = 50;
+		var scoreText;
+		var gameStarted = false;
+		const KEYCODE_LEFT = 37;
+   		const KEYCODE_RIGHT = 39
+   		const SPACEBAR = 32;
+   		var keyboardMoveLeft = false;
+   		var keyboardMoveRight = false;
+   		var highScore = 0;
+        
+        var projectColor = '#000FFF';
+        
+// TODO - Refactor and add borders, border colors, border width, etc, alpha???
+//        function cell(color, x, y, width, height, row, col) {
+//            this.color = color;
+//            this.x = x;
+//            this.y = y;
+//            this.width = width;
+//            this.height = height;
+//            this.row = row;
+//            this.col = col;
+//        }
+        
+        var memTestCells = [];
+        
+        function TestCell(owner,status,plannedTaskId,row,col,x,y,color,type,tag,budget,marketCheck) {
+            
+            this.owner = owner;    // email of owner
+            this.status = status;
+            this.plannedTaskId = plannedTaskId;
+            this.row = row;
+            this.col = col;
+	        this.x = x;
+	        this.y = y;
+            this.color = color;
+            this.name = tag+'_'+type;
+            this.type = type;
+            this.tag = tag;
+            this.budget = budget;
+            this.marketCheck = marketCheck;   
+            
+        }
+        
+        var memTaskCells = [];
+        
+        function TaskCell(owner,status,plannedTestId,row,col,x,y,color,type,tag,price,marketCheck) {
+            
+            this.owner = owner;    // email of owner
+            this.status = status;
+            this.plannedTestId = plannedTestId;
+            this.row = row;
+            this.col = col;
+	        this.x = x;
+	        this.y = y;
+            this.color = color;
+            this.name = tag+'_'+type;
+            this.type = type;
+            this.tag = tag;
+            this.price = price;
+            this.marketCheck = marketCheck;           
+            
+        }
+        
+        // TODO - first replace the cells in the array with pipe | delimited strings for Color|tag|price=Budget/nr functionalities * priorities, etc
+         var tests = [
+                     ['0|bid|1','1|bid|2','2|bid|3','3|bid|4','4|bid|5','5|bid|6','6|bid|7','7|bid|8','8|bid|9','9|bid|10'],
+                     ['0|bid|1','1|bid|2','2|bid|3','3|bid|4','4|bid|5','5|bid|6','6|bid|7','7|bid|8','8|bid|9','5|bid|6'],
+                     ['0|bid|1','1|bid|2','2|bid|3','3|bid|4','4|bid|5','5|bid|6','6|bid|7','7|bid|8','8|bid|9','9|bid|5'],
+                     ['0|bid|1','1|bid|2','3|bid|4','3|bid|4','4|bid|5','5|bid|6','6|bid|7','7|bid|8','8|bid|9','9|bid|10'],
+                     ['5|bid|6','3|bid|4','2|bid|3','3|bid|4','8|bid|9','5|bid|6','6|bid|7','7|bid|8','8|bid|9','1|bid|2'],
+                     ['0|bid|10','1|bid|9','2|bid|8','3|bid|7','4|bid|6','5|bid|5','6|bid|4','7|bid|3','8|bid|2','9|bid|1']
+                    ]; 
+        
+        var testsColor = [
+                        '#F0B2C1',
+                        '#E9AFBE',
+                        '#E3ACBC',
+                        '#DCA9B9',
+                        '#D6A6B7',
+                        '#CFA2B4',
+                        '#C99FB2',
+                        '#C29CAF',
+                        '#BC99AD',
+                        '#B596AA'
+                        ];
+        
+        var testPlanReady = false;      // when testPlanReady is true - we can start execution of plan
+        var testPlanStep = 0;
+        
+        var planed  = [1,2,3,4,5,6,7,8,9,10]
+        
+        var tasks = [
+                     ['0|ask|1','1|ask|2','2|ask|3','3|ask|4','4|ask|5','5|ask|6','6|ask|7','7|ask|8','8|ask|9','9|ask|10'],
+                     ['0|ask|1','1|ask|2','2|ask|3','3|ask|4','4|ask|5','5|ask|6','6|ask|7','7|ask|8','8|ask|9','9|ask|10'],
+                     ['0|ask|1','1|ask|2','2|ask|3','3|ask|4','4|ask|5','5|ask|6','6|ask|7','7|ask|8','8|ask|9','9|ask|10'],
+                     ['0|ask|1','1|ask|2','2|ask|3','3|ask|4','4|ask|5','5|ask|6','6|ask|7','7|ask|8','8|ask|9','9|ask|10'],
+                     ['0|ask|1','1|ask|2','2|ask|3','3|ask|4','4|ask|5','5|ask|6','6|ask|7','7|ask|8','8|ask|9','9|ask|10'],
+                     ['0|ask|1','1|ask|2','2|ask|3','3|ask|4','4|ask|5','5|ask|6','6|ask|7','7|ask|8','8|ask|9','9|ask|10']
+                    ];
+        
+        var tasksColor = [
+                        '#ABD3DE',
+                        '#A5CEDA',
+                        '#A0C8D6',
+                        '#9AC3D2',
+                        '#94BDCE',
+                        '#8FB8CB',
+                        '#89B2C7',
+                        '#83ADC3',
+                        '#7EA7BF',
+                        '#78A2BB'
+                        ];
+        
+        var taskPlanDone = false;       // when taskPlanDone is true - we can start next Cycle/Project/Challenge
+        var taskPlanStep = 0;
+        
+        // To build the Project Plan
+        var nrTests = 10;
+        var test = 0;                   // A test is an instance of a request / demand 
+        var scaleTest = 0.5;            // Sugegsting planning a task is cheaper than the task                      
+        
+        var nrTasks = 10;
+        var task = 0;                   // A task is an instance of a service / offer
+        var scaleTask = 1;              // Suggesting a task could be several times more expensive than the simmulation used for planning
+        
+        // Changed test circle variables to plan circle vars
+        var planAngle = 360/nrTests;
+        var planRad = (2*Math.PI)/nrTests;
+        var planCircleX = 275;
+        var planCircleY = 344;
+        var planCircleR = 100; // CELL_WIDTH/2*Math.sin(testRad);
+        // Plan Circle begins at 9 o'clock
+        var planX = planCircleX - planCircleR;
+        var planY = planCircleY;
+        var circleSize = ( 2 * planCircleR * Math.sin(planRad) ) / CELL_WIDTH;
+        // console.log(circleSize);
+        
+        // SI: Jul 13, 2018
+        // ToDo - Add Second text like: Match World's Top Challenges with World's Top Services
+        // or          Match World's Top Challenges to your Top Services
+        var repoText = "UGE-Teams.W3AI.net";            // UGE-community.firebaseapp.com
+        var repoURL = "https://github.com/W3AI/UGE";
+        var repoTextStyle = "16px Arial";
+        var repoTextX = 390;
+        var repoTextY = 514;
+        var challangeText = "demand";
+        var cTextX = 135;
+        var cTextY = 103;
+        var serviceText   = "offer";
+        var sTextX = 165;
+        var sTextY = 640;
+        
+        var bgTxtU  = "universal";
+        var bgTxtUx = 61;
+        var bgTxtUy = 430;          // 353; - is for central horizontal text mddle of 'U' and on middle line of 'E'
+        
+        var bgTxtG  = "genetic";       // 'start' ?
+        var bgTxtGx = 255;          // Should this be textAlign Center?
+        
+        var bgTxtE  = "engine";
+        var bgTxtEx = 435;
+        
+        var bgTXT = "UGE";
+        var bgX = -10;
+        var bgY = 433;
+        var bgColor = "white";
+        var bgStyle = "260px Arial";
+        
+        var csTextColor = "whitesmoke";     // "whitesmoke"; 
+        var backgroundText = "ideas";
+        var backgroundTextColor = "#ccc";
+        var backgroundTextStyle = "60px Arial";
+        var bgTextX = 205;
+        var bgTextY = 360;
+        
+        var scoreTextX = 10;
+        var scoreTextY = 500;
+        
+        var paddleColor = "#fff";
+        var ballColor = "#fff"; // #ff7700
+        
+        // TODO - make cols/types, rows/depth constants? - it will var per level/version - size of Agile cycles
+        var problem_rows = 6;
+        var problem_cols = 10;
+        
+        var taskCells = [];
+        var taskOrder = 0;
+        var iterationTasks = [];  // array of service/tasks objects to keep data: status, change tags, priority/usage/votes, owner, cost, ref, etc
+        
+        var serviceColor = "Green"; // ToDo - make it an array to hold diff colors / service type
+        var serviceLine = 550; // y position for the taskCells
+        
+        // TODO - make cols/types, rows/depth constants? - it will var per level/version - size of Agile cycles
+        var service_rows = 6;
+        var service_cols = 10; 
+        
+        var currentTestRow = 6;     // We start with the bottom of the test grid
+        var currentTaskRow = 1;
+        
+        var textCentre = '';
+        
+        
+		function init()
+		{
+            // TODO - to integrate into UGE Community Leaderboard
+			if(typeof(Storage) !== "undefined") {
+			    if(localStorage.highScore==undefined)
+			    {
+			    	localStorage.highScore = 0;
+			    }
+			    highScore = localStorage.highScore;
+			} else {
+			    highScore = 0;
+			}
+            
+            canvas = document.getElementById('canvas');
+
+			stage = new createjs.Stage("canvas");
+			
+            if (typeof window.orientation !== 'undefined') {
+                window.onorientationchange = onOrientationChange;
+                if (createjs.Touch.isSupported()) {
+                    createjs.Touch.enable(stage);
+                }
+            onOrientationChange();
+            }
+            else {
+            window.onresize = resizeGame;
+            resizeGame();
+            }
+            
+            createBackground();
+			createPaddle();
+			createBall();
+			createTestGrid(); // Create Problems/Tests grid
+            // console.log('memTestCells.length = ' + memTestCells.length);
+			createTaskGrid(); // Create Services/Tasks grid  
+            // console.log('memTaskCells.length = ' + memTaskCells.length);
+			createScoreText();
+
+			stage.canvas.height = window.innerHeight;
+
+			createjs.Ticker.setFPS(60);
+			createjs.Ticker.addEventListener("tick", tick); //Changed to tick from stage
+
+			stage.on("stagemousedown", function(event) 
+				{ 
+					startLevel();
+				});
+
+			stage.on("stagemousemove", function (event)
+			{
+				paddle.x = stage.mouseX;
+			});
+
+			//keyboard handlers
+   			window.onkeyup = keyUpHandler;
+   			window.onkeydown = keyDownHandler;
+		}
+        
+    function onOrientationChange() {
+        setTimeout(resizeGame, 100);
+        }
+        
+    function resizeGame() {
+        var nTop, nLeft, scale;
+        var gameWrapper = document.getElementById('gameWrapper');
+        // var bg = document.getElementById('bg');
+        var w = window.innerWidth;
+        var h = window.innerHeight;
+        var nWidth = window.innerWidth;
+        var nHeight = window.innerHeight;
+        var widthToHeight = canvas.width / canvas.height;
+        var nWidthToHeight = nWidth / nHeight;
+        if (nWidthToHeight > widthToHeight) {
+            nWidth = nHeight * widthToHeight;
+            scale = nWidth / canvas.width;
+            nLeft = (w / 2) - (nWidth / 2);
+            gameWrapper.style.left = (nLeft) + "px";
+            gameWrapper.style.top = "0px";
+        }
+        else {
+            nHeight = nWidth / widthToHeight;
+            scale = nHeight / canvas.height;
+            nTop = (h / 2) - (nHeight / 2);
+            gameWrapper.style.top = (nTop) + "px";
+            gameWrapper.style.left = "0px";
+        }
+        canvas.setAttribute("style", "-webkit-transform:scale(" + scale + ")");
+        // bg.setAttribute("style", "-webkit-transform:scale(" + scale + ")");
+        window.scrollTo(0, 0);
+    }
+        
+        function createBackground() {
+            
+//            var bgTxt = new createjs.Text(bgTXT, bgStyle, bgColor);
+//            bgTxt.x = stage.canvas.width/2;      // bgX;
+//            bgTxt.textAlign = "center";
+//            bgTxt.y = bgY;
+//            bgTxt.textBaseline = "alphabetic";
+//            stage.addChild(bgTxt);
+            
+            // TODO - should this be global var? together with "universal" and "engine" texts
+            var bg = new createjs.Bitmap('UGE.gif');  
+            bg.x = 22; 
+            bg.y = 253; 
+            stage.addChild(bg);
+            
+            bgTxtU = new createjs.Text('universal', repoTextStyle, 'whitesmoke');   //  'universal'
+            bgTxtU.x = bgTxtUx;
+            bgTxtU.y = bgTxtUy;
+            bgTxtU.textBaseline = "alphabetic";
+            stage.addChild(bgTxtU);
+  
+            bgTxtG = new createjs.Text('genetic', repoTextStyle, 'whitesmoke');        //  'game' | 'grammar' | 'genetic'
+            bgTxtG.x = bgTxtGx - 4;
+            bgTxtG.y = bgTxtUy + 2;
+            bgTxtG.textBaseline = "alphabetic";
+            stage.addChild(bgTxtG);
+            
+            bgTxtE = new createjs.Text('engine', repoTextStyle, 'whitesmoke');      //  'engine'
+            bgTxtE.x = bgTxtEx;
+            bgTxtE.y = bgTxtUy;
+            bgTxtE.textBaseline = "alphabetic";
+            stage.addChild(bgTxtE);
+            
+            textCentre = new createjs.Text(backgroundText, backgroundTextStyle, backgroundTextColor); // 'Game', 'ideas', 'plan', 'solve', 'action', 'serve', ...
+            textCentre.x = stage.canvas.width/2;     // bgTextX;
+            textCentre.textAlign = "center";
+            textCentre.y = bgTextY;
+            textCentre.textBaseline = "alphabetic";
+            stage.addChild(textCentre);
+            
+            var textRepo = new createjs.Text(repoText, repoTextStyle, backgroundTextColor);
+            textRepo.x = repoTextX;
+            textRepo.y = repoTextY;
+            textRepo.textBaseline = "alphabetic";
+            stage.addChild(textRepo);
+
+        }
+
+		function startLevel()
+		{
+			if(!gameStarted)
+					{
+						console.log("Start Game");
+						gameStarted = true; 
+						ball.xSpeed = 5; 
+						ball.ySpeed = 5;
+						ball.up = true;
+						ball.right = true;
+                        // update textCentre
+                        textCentre.text = 'plan';
+					}
+		}
+
+		function keyDownHandler(e)
+ 		{
+   			switch(e.keyCode)
+   			{
+    		case KEYCODE_LEFT:  keyboardMoveLeft = true; break;
+    		case KEYCODE_RIGHT: keyboardMoveRight = true; break;
+    		case SPACEBAR: startLevel(); break;
+    		} 
+  		}
+
+  		function keyUpHandler(e)
+ 		{
+   			switch(e.keyCode)
+   			{
+    			case KEYCODE_LEFT:  keyboardMoveLeft = false; break;
+    			case KEYCODE_RIGHT: keyboardMoveRight = false; break;
+    		} 
+    	}
+
+		function addToScore(points)
+		{
+			score+=points;
+			updateStatusLine();
+		}
+        
+        function deductFromScore(points)
+		{
+			score-=points;
+            lives--;
+			updateStatusLine();
+		}
+
+		function createScoreText()
+		{
+			scoreText = new createjs.Text("Score: 0", "16px Arial", "#000000");
+			addToScore(0);
+			scoreText.y = scoreTextY;    // stage.canvas.height - 16;
+            scoreText.x = scoreTextX;
+			stage.addChild(scoreText);
+		}
+
+		function updateStatusLine()
+		{
+			scoreText.text = "Slack: "+score + " / Budget: "+lives;
+			// scoreText.text = "Profit: "+score + " / Budget: "+lives+" / Top Performance: "+highScore;
+		}
+
+        // ToDo - Change this to usedService - no loseLife in this hack!
+		function loseLife()
+		{
+            // Lives are changed to Services - 
+			console.log("Lose A Life");
+			lives--;
+			ball.xSpeed = 0;
+			ball.ySpeed = 0;
+			ball.x = paddle.x;
+			ball.y = paddle.y - PADDLE_HEIGHT/2 - BALL_RADIUS;
+			gameStarted = false;
+
+			if(lives==0)
+			{
+				if(highScore<score)
+				{
+					highScore = score;
+					localStorage.highScore = score;
+				}
+				lives = 3;
+				score = 0;
+			}
+			updateStatusLine();
+		}
+
+		function tick(event)
+		{
+			if(keyboardMoveLeft)
+				{
+					console.log("Keyboard - Left");
+					paddle.x-=5;
+				}
+			if(keyboardMoveRight)
+				{
+					console.log("Keyboard - Right");
+					paddle.x+=5;
+				}
+
+			if(paddle.x+PADDLE_WIDTH/2>stage.canvas.width)
+				{
+					paddle.x = stage.canvas.width - PADDLE_WIDTH/2;
+				}
+			if(paddle.x-PADDLE_WIDTH/2<0)
+				{
+					paddle.x = PADDLE_WIDTH/2;
+				}
+			
+			
+			if(!gameStarted)
+			{
+				ball.x = paddle.x;
+				ball.y = paddle.y - PADDLE_HEIGHT/2  - BALL_RADIUS;
+				stage.update();
+				return;
+			}
+
+            // Regular physics
+			if(ball.up)
+			{
+				ball.y -= ball.ySpeed;
+			}
+			else
+			{
+				ball.y += ball.ySpeed;
+			}
+                
+            if(ball.right)
+			 {
+				ball.x += ball.xSpeed;
+			 }
+			 else
+			 {
+				ball.x -= ball.xSpeed;
+			 }
+            
+            // Check collision w testCells
+			for(var i=0;i<testCells.length;i++)
+			{
+                
+                // Check if it is the current plan step
+				if( checkCollision(ball,testCells[i]) )
+				{
+					
+                    // TODO - add Dev/Test mode logic
+                    tx++;
+                    console.log("--- testCell collision: " + tx);
+                    
+                    console.log('i = ' + i);
+
+                    console.log('currentTaskRow = ' + currentTaskRow);
+                    
+                    ball.sender = "testCell " + testCells[i].name;
+                    console.log("ball.sender = " + ball.sender);
+                    
+                    // TODO - use ? undefined ball color to show ?! the "INVISIBLE HAND" of the market
+                    changeBallColor(testsColor[testCells[i].type]); // if color undefined then ball exists and works but invisible
+                    
+                    var row = testCells[i].row;
+                    var col = testCells[i].col;
+                    console.log('testCell row: ' + row + ' & col: ' + col);
+                    
+                    var marketCheck      = testCells[i].marketCheck;
+                    var marketCheckArray = marketCheck.split(',');
+                    console.log('testCells[i].marketCheck = ' + marketCheck);
+                    
+                    // START - Find BEST of MARKET for Planning - Tests to Tasks <<-----------------<<<< !!!
+                    
+                    console.log('------- start Dev Top Market Profit : Planning - Tests to Tasks -------');
+                    
+                    // Find top profitable service available currently in the market - with lowest price for the change/tag
+                    var taskRow = [];
+
+                    // TODO - iterate only through marketCheck array !'u' of current test cell and have a formula for k
+                    for(var k=0; k<marketCheckArray.length; k++)
+                    {
+                        // Calculate indexes of cells in the current task row based on currentTaskRow and k = col from marketCheckArray from memTestCells
+                        // if available && unchecked/updated - include it in the sorting array
+                        // TODO - UPDATE test/task cells on 'available' and '!planned' <<-------------------------------------<<<<<
+                        if((memTaskCells[(currentTaskRow-1)*service_cols + k].status == 'available') && (marketCheckArray[k] == 'u'))
+                        {
+                           // add k, price
+                           taskRow.push( [ k, memTaskCells[(currentTaskRow-1)*service_cols + k].price ] );
+                        }
+                    }
+
+                    // Check if taskRow NOT empty
+                    if(taskRow.length > 0)
+                    {
+                        
+                        // sort ascending
+                        taskRow.sort(function(a, b) {return a[1] - b[1];});
+
+                        console.log('taskRow : ' + taskRow);
+
+                        // now we now lowest price is in taskRow[0]
+                        var idLoPrice = taskRow[0][0];
+                        console.log('idLoPrice = ' + idLoPrice);
+
+                        // calculate the id of the Low Price Cell in the memTaskCells
+                        var idLoTaskCell = (currentTaskRow-1)*service_cols + idLoPrice;
+                        console.log('idLoTaskCell = ' + idLoTaskCell);
+
+                        console.log('memTaskCells[idLoTaskCell] = ' + memTaskCells[idLoTaskCell]);
+
+                        console.log('memTaskCells[idLoTaskCell].x = ' + memTaskCells[idLoTaskCell].x);
+                        console.log('memTaskCells[idLoTaskCell].y = ' + memTaskCells[idLoTaskCell].y);
+
+                        console.log('memTaskCells[idLoTaskCell].row = ' + memTaskCells[idLoTaskCell].row);
+                        console.log('memTaskCells[idLoTaskCell].col = ' + memTaskCells[idLoTaskCell].col);                    
+
+                        // now we calculate dX and dY between taskRow[0] and ball
+                        var dX = memTaskCells[idLoTaskCell].x - ball.x;
+                        var dY = memTaskCells[idLoTaskCell].y - ball.y;
+
+                        console.log("ball.x = " + ball.x);
+                        console.log("ball.y = " + ball.y);
+
+                        console.log("dX = " + dX);
+                        console.log("dY = " + dY);
+
+                        // Calculate speed tangent as abs(dX/dY)
+                        var speedTan = Math.abs(dX/dY);
+
+                        // check if ball should go left or right
+                        if (dX > 0) {
+                            ball.right = true;
+                        }   else {
+                            ball.right = false;
+                        }
+                        console.log('ball.right = ' + ball.right);
+
+                        console.log('ball.xSpeed = ' + ball.xSpeed);
+                        console.log('speedTan = ' + speedTan);
+
+                        ball.xSpeed = speedTan*ball.ySpeed;
+
+                        console.log('new ball.xSpeed = ' + ball.xSpeed);
+
+                        // TODO - Update ball msg and command fields !!! <<<<------------------------------------<<<< !!!
+
+                        // TODO - Update testCells[i].marketCheck    !!!
+                        marketCheckArray[idLoPrice] = 'm';           // 'm' for messaged
+
+                        testCells[i].marketCheck = marketCheckArray.toString();
+
+                        console.log('testCells[i].marketCheck = ' + testCells[i].marketCheck);
+
+                        console.log('------- end Dev Top Market Profit : Planning - Tests to Tasks -------'); 
+                    
+                    } else {
+                        
+                        console.log(' --- >>> taskRow array is Empty');
+                        
+                    }
+
+                    // END - Find BEST of MARKET for Planning - Tests to Tasks <<-----------------<<<< !!!
+                    
+                    
+                    // TODO - Formalize as PRE-PLANNED CASE/ animation?: Check if it is the current plan step
+                    if( (testCells[i].type == testPlanStep.toString()) && (testCells[i].row == currentTestRow) ) 
+                    {
+                                        
+                        // TODO - Add logic for when to update score and destroy cell
+                        addToScore(100);
+					    console.log("Cell Hit / New Score: "+score);
+                        
+                        // Update status to 'removed' memTestCells for cell i - beased on row and col of cell i
+                        // testCells[(currentTestRow-1)*problem_cols + col - 1].status = 'planned';
+                        memTestCells[(currentTestRow-1)*problem_cols + col - 1].status = 'planned';
+                        
+                        // testCells[(currentTestRow-1)*problem_cols + col - 1].plannedTaskId = idLoTaskCell;
+                        memTestCells[(currentTestRow-1)*problem_cols + col - 1].plannedTaskId = idLoTaskCell;
+                        
+                        L('idLoTaskCell',idLoTaskCell);
+                        
+                        // taskCells[idLoTaskCell].status = 'planned';
+                        memTaskCells[idLoTaskCell].status = 'planned';
+                        
+                        // taskCells[idLoTaskCell].plannedTestId = (currentTestRow-1)*problem_cols + col - 1;
+                        memTaskCells[idLoTaskCell].plannedTestId = (currentTestRow-1)*problem_cols + col - 1;
+                        
+                        // i should be = to (currentTestRow-1)*problem_cols + col - 1
+                        console.log('??? ---  i = ' + i + ' ?= ' + ((currentTestRow-1)*problem_cols + col - 1) + ' = (currentTestRow-1)*problem_cols + col - 1');
+                        
+					    destroyTestCell(testCells[i]);
+                    
+					    testCells.splice(i,1);
+                        
+					    i--;
+                    
+                        testPlanStep++;
+                        
+                    }
+                    
+				}
+                
+                if(testCells.length==0 || testPlanStep>=10) 
+                {
+                    // gameStarted = false; // lives += 50; // init();
+                    
+                    testPlanReady = true;
+                    // update textCentre
+                    
+                    textCentre.text = 'action';
+                }
+                
+			}
+            
+            // Added the collision w service cells
+            // Change services to taskCells
+			for(var i=0;i<taskCells.length;i++)
+			{
+				if( checkCollision(ball,taskCells[i]) )
+				{
+                    
+                    // TODO - add Dev/Test mode logic
+                    tx++;
+                    console.log("--- taskCell collision: " + tx);
+                    
+                    console.log('i = ' + i);
+
+                    console.log('currentTestRow = ' + currentTestRow);
+                    
+                    ball.sender = "taskCell " + taskCells[i].name;
+                    console.log("ball.sender = " + ball.sender);
+                    
+                    changeBallColor(tasksColor[taskCells[i].type]);
+                    
+                    var row = taskCells[i].row;
+                    var col = taskCells[i].col;
+                    console.log('taskCell row: ' + row + ' & col: ' + col);
+                    
+                    var marketCheck      = taskCells[i].marketCheck;
+                    var marketCheckArray = marketCheck.split(',');
+                    console.log('taskCells[i].marketCheck = ' + marketCheck);
+                    
+                    
+                    
+                    
+                    
+                    // START - Find BEST of MARKET for Planning - TASKs to TESTs <<-----------------<<<< !!!
+                    
+                    console.log('------- start Dev Top Market Profit : Planning - TASKs to TESTs -------');
+                    console.log('taskCells[i].marketCheck = ' + marketCheck);
+                    
+                    // Find top profitable service available currently in the market - with lowest price for the change/tag
+                    var testRow = [];
+
+                    // TODO - iterate only through marketCheck array !'u' of current test cell and have a formula for k
+                    for(var k=0; k<marketCheckArray.length; k++)
+                    {
+                        // Calculate indexes of cells in the current test row based on currentTestRow and k = col from marketCheckArray from memTaskCells
+                        // if available && unchecked/updated - include it in the sorting array
+                        // TODO - UPDATE test/task cells on 'available' and '!planned' <<-------------------------------------<<<<<
+                        if((memTestCells[(currentTestRow-1)*problem_cols + k].status == '!planned') && (marketCheckArray[k] == 'u'))
+                        {
+                           // add k, price
+                           testRow.push( [ k, memTestCells[(currentTestRow-1)*problem_cols + k].budget ] );
+                        }
+                    }
+
+                    if(testRow.length > 0) {
+                    
+                        // sort descending - Service Providers want to target the top budgeted tests
+                        testRow.sort(function(a, b) {return b[1] - a[1];});
+
+                        console.log('testRow : ' + testRow);
+
+                        // now we now highest budget/priority is in testRow[0]
+                        var idHiPriority = testRow[0][0];
+                        console.log('idHiPriority = ' + idHiPriority);
+
+                        // calculate the id of the High Priority Cell in the memTestCells
+                        var idHiTestCell = (currentTestRow-1)*problem_cols + idHiPriority;
+                        console.log('idHiTestCell = ' + idHiTestCell);
+
+                        console.log('memTestCells[idHiTestCell] = ' + memTestCells[idHiTestCell]);
+
+                        console.log('memTestCells[idHiTestCell].x = ' + memTestCells[idHiTestCell].x);
+                        console.log('memTestCells[idHiTestCell].y = ' + memTestCells[idHiTestCell].y);
+
+                        console.log('memTestCells[idHiTestCell].row = ' + memTestCells[idHiTestCell].row);
+                        console.log('memTestCells[idHiTestCell].col = ' + memTestCells[idHiTestCell].col);                    
+
+                        // now we calculate dX and dY between taskRow[0] and ball
+                        var dX = memTestCells[idHiTestCell].x - ball.x;
+                        var dY = memTestCells[idHiTestCell].y - ball.y;
+
+                        console.log("ball.x = " + ball.x);
+                        console.log("ball.y = " + ball.y);
+
+                        console.log("dX = " + dX);
+                        console.log("dY = " + dY);
+
+                        // Calculate speed tangent as abs(dX/dY)
+                        var speedTan = Math.abs(dX/dY);
+
+                        // check if ball should go left or right
+                        if (dX > 0) {
+                            ball.right = true;
+                        }   else {
+                            ball.right = false;
+                        }
+                        console.log('ball.right = ' + ball.right);
+
+                        console.log('ball.xSpeed = ' + ball.xSpeed);
+                        console.log('speedTan = ' + speedTan);
+
+                        ball.xSpeed = speedTan*ball.ySpeed;
+
+                        console.log('new ball.xSpeed = ' + ball.xSpeed);
+
+                        // TODO - Update ball msg and command fields !!! <<<<------------------------------------<<<< !!!
+
+                        // TODO - Update testCells[i].marketCheck    !!!
+                        marketCheckArray[idHiPriority] = 'm';           // 'm' for messaged
+
+                        taskCells[i].marketCheck = marketCheckArray.toString();
+
+                        console.log('taskCells[i].marketCheck = ' + taskCells[i].marketCheck);
+
+                        console.log('------- end Dev Top Market Profit : Planning - TASKs to TESTs -------');  
+
+                        // END - Find BEST of MARKET for Planning - TASKs to TESTs <<-----------------<<<< !!!                    
+                    
+                    } else {
+                        console.log(' --- >>> testRow array is Empty');
+                    }
+                    
+                    L('i',i);
+                    L('taskCells[i].type',taskCells[i].type);
+                    L('taskPlanStep.toString()',taskPlanStep.toString());
+                    L('testPlanReady', testPlanReady);
+                    L('taskCells[i].status', taskCells[i].status);
+                    
+                    // Check if it is the current plan step 
+                    if( (taskCells[i].type == taskPlanStep.toString()) && testPlanReady && (memTaskCells[i].status == 'planned'))
+                    {
+                    
+                        // ToDo - to add some more logic for taskCells: available or not etc, cost - to be done in spreadsheets
+                        // TODO - Add logic for when to update score and destroy cell
+					    deductFromScore(100);
+					    console.log("Service Used / New Score: "+score);
+					    destroyTaskCell(taskCells[i]);
+                    
+					    taskCells.splice(i,1);
+					    i--;
+                    
+                        taskPlanStep++;
+                    }
+				}
+                
+                if(taskCells.length <= 50) 
+                {   
+                    taskPlanDone = true;
+                    
+                    gameStarted = false;
+                    lives += 50;
+                    init();
+                }
+
+			}    // End Collision check with Service cells
+            
+
+			if(checkCollision(ball,paddle))
+			{
+				newBallXSpeedAfterCollision(ball,paddle);
+			}
+
+			//Check if we've reached the walls
+
+			if(ball.x+BALL_RADIUS>=stage.canvas.width)   // ball hit right wall of screen
+			{
+				ball.x = stage.canvas.width - BALL_RADIUS;
+				ball.right = false;
+			}
+
+			if(ball.x-BALL_RADIUS<=0)                    // ball hit left wall of screen
+			{
+				ball.x = BALL_RADIUS;
+				ball.right = true;
+			}
+
+			if(ball.y-BALL_RADIUS<=0)                    // ball hit top wall of screen
+			{
+				ball.y = BALL_RADIUS;
+				ball.up = false;
+			}
+
+			if(ball.y+BALL_RADIUS>=stage.canvas.height)  // ball hit bottom wall of screen
+			{
+                ball.y = stage.canvas.height - BALL_RADIUS;
+                ball.up = true;
+			}
+
+			ball.lastX = ball.x;
+			ball.lastY = ball.y;
+
+			stage.update();
+		}
+
+        // TODO - To change Physics Collision rules for Project cells bottom and Service cell top 
+        // to go to the top profit available (status = available) counterpart
+        // TODO - To mark Manual and Automated cells and differentiate availability after an engagement 
+        // - Manual - won't be available during an engagement
+        // Automated - will have availability / bandwidth (MAX) during engagement 
+		function checkCollision(ballElement,hitElement)
+		{
+			var leftBorder = (hitElement.x - hitElement.getBounds().width/2);
+			var rightBorder = (hitElement.x + hitElement.getBounds().width/2);
+			var topBorder = (hitElement.y - hitElement.getBounds().height/2);
+			var bottomBorder = (hitElement.y + hitElement.getBounds().height/2);
+			var previousBallLeftBorder = ballElement.lastX - BALL_RADIUS;
+			var previousBallRightBorder = ballElement.lastX + BALL_RADIUS;
+			var previousBallTopBorder = ballElement.lastY - BALL_RADIUS;
+			var previousBallBottomBorder = ballElement.lastY + BALL_RADIUS;
+			var ballLeftBorder = ballElement.x - BALL_RADIUS;
+			var ballRightBorder = ballElement.x + BALL_RADIUS;
+			var ballTopBorder = ballElement.y - BALL_RADIUS;
+			var ballBottomBorder = ballElement.y + BALL_RADIUS;
+
+
+			if((ballLeftBorder<=rightBorder) && (ballRightBorder >= leftBorder) && (ballTopBorder <= bottomBorder) && (ballBottomBorder >= topBorder))
+			{
+
+				if((ballTopBorder <= bottomBorder)&&(previousBallTopBorder > bottomBorder))
+				{
+					//Hit from the bottom
+					ballElement.up = false;
+					ballElement.y = bottomBorder + BALL_RADIUS;
+				}
+
+				if((ballBottomBorder >= topBorder)&&(previousBallBottomBorder<topBorder))
+				{
+					//Hit from the top
+					ballElement.up = true;
+					ballElement.y = topBorder - BALL_RADIUS;
+				}
+				if((ballLeftBorder<=rightBorder)&&(previousBallLeftBorder>rightBorder))
+				{
+					//Hit from the right
+					ballElement.right = true;
+					ballElement.x = rightBorder + BALL_RADIUS;
+				}
+
+				if((ballRightBorder >= leftBorder)&&(previousBallRightBorder < leftBorder))
+				{
+					//Hit from the left
+					ballElement.right = false;
+					ballElement.x = leftBorder - BALL_RADIUS;
+				}
+
+				ballElement.lastX = ballElement.x;
+				ballElement.lastY = ballElement.y;
+				return true;
+			}
+			return false;
+		}
+
+		function newBallXSpeedAfterCollision(ballElement,hitElement)
+		{
+			var startPoint = hitElement.x - hitElement.getBounds().width/2;
+			var midPoint =  hitElement.x;
+			var endPoint = hitElement.x + hitElement.getBounds().width/2;
+
+			if(ballElement.x<midPoint)
+			{
+				ball.right = false;
+				ball.xSpeed = FULL_X_SPEED - ((ballElement.x - startPoint)/(midPoint-startPoint)) * FULL_X_SPEED
+			}
+			else
+			{
+				ball.xSpeed = FULL_X_SPEED - ((endPoint - ballElement.x)/(endPoint-midPoint)) * FULL_X_SPEED
+				ball.right = true;	
+			}
+		}
+
+		// Renamed to createTestGrid and added iterationTests array 
+		function createTestGrid()
+		{
+			for(var i = 0;i<problem_rows;i++)
+				for(var j = 0;j<problem_cols;j++)
+				{
+					// Adding mapping logic from the tasks matrix - if tasks[i*j] == 1 -> create task cell
+                    if (tests[i][j] != "||") {
+                        // for now - later task type and id, etc will come from project spreadsheet via iterationTests[]
+                        // test type = value of tests[j][i]-1
+                        // test id = tests[j][i]
+                        // createTest(x,y,type,id) - type will be the index of the color and id the text in the cell
+                        // test[0] = color / id
+                        // test[1] = change tag eg: - for demo could be just change or change(p) change - changeId - change1, change2, change3 
+                        // test[2] = budget, price, etc
+                        var test = tests[i][j].split('|');
+                        var marketCheck = [];       // marketCheck to hold the status of the check/deals in the current market context - on current pair row
+                        for (k = 0;k<service_cols;k++){marketCheck.push('u')}       // here we look from test/problems to each task/services
+                        // TODO - write code to get the email from UGE Teams app
+                          createTest(
+                                     'email',
+                                     '!planned',
+                                     '',
+                                     i+1, 
+                                     j+1,
+                                     j*(CELL_WIDTH+BETWEEN_COLS) + PADDING_LEFT,
+                                     i*(CELL_HEIGHT+BETWEEN_ROWS) + PADDING_TOP,
+                                     testsColor[test[0]],
+                                     test[0],
+                                     test[1],
+                                     test[2],
+                                     marketCheck.toString()
+                                    );
+                        var testCell = new TestCell(
+                                     'email',
+                                     '!planned',
+                                     '',
+                                     i+1, 
+                                     j+1,
+                                     j*(CELL_WIDTH+BETWEEN_COLS) + PADDING_LEFT,
+                                     i*(CELL_HEIGHT+BETWEEN_ROWS) + PADDING_TOP,
+                                     testsColor[test[0]],
+                                     test[0],
+                                     test[1],
+                                     test[2],
+                                     marketCheck.toString()
+                                    );
+                        memTestCells.push(testCell);
+                        
+                        }
+                    
+				}
+            
+            // Create Challenges text
+            var textChallenges = new createjs.Text(challangeText, backgroundTextStyle, csTextColor);
+            textChallenges.x = stage.canvas.width/2;      // cTextX;
+            textChallenges.textAlign = "center";
+            textChallenges.y = cTextY;
+            textChallenges.textBaseline = "alphabetic";
+            stage.addChild(textChallenges);
+		}		
+        
+        // Renamed to createTaskGrid and added iterationTasks array
+        function createTaskGrid()
+		{
+			for(var i = 0;i<service_rows;i++)
+				for(var j = 0;j<service_cols;j++)
+				{
+                    if (tasks[i][j] != "||") {
+                        // for now - later task type and id, etc will come from service spreadsheet via iterationTasks[]
+                        // task type = value of tasks[j][i]-1
+                        // task id = tasks[j][i]
+                        // createTest(x,y,type,id) - type will be the index of the color and id the text in the cell
+                        // task[0] = color id
+                        // task[1] = change tag eg: 
+                        // task[2] = budget,price etc
+                        var task = tasks[i][j].split('|');
+                        var marketCheck = [];      // marketCheck to hold the status of the check/deals in the current market context - on current pair row
+                        for (k = 0;k<problem_cols;k++){marketCheck.push('u')}   // here we look from task/services to each test/problems
+                        // TODO - write code to get the email from UGE Teams app
+					   createTask(
+                                  'email',
+                                  'available',
+                                  i+1, 
+                                  j+1,
+                                  '',
+                                  j*(CELL_WIDTH+BETWEEN_COLS) + PADDING_LEFT,
+                                  i*(CELL_HEIGHT+BETWEEN_ROWS) + serviceLine,
+                                  tasksColor[task[0]],
+                                  task[0],
+                                  task[1],
+                                  task[2],
+                                  marketCheck.toString()
+                                 );
+                        var taskCell = new TaskCell(
+                                     'email',
+                                     'available',
+                                     '',
+                                     i+1, 
+                                     j+1,
+                                     j*(CELL_WIDTH+BETWEEN_COLS) + PADDING_LEFT,
+                                     i*(CELL_HEIGHT+BETWEEN_ROWS) + serviceLine,
+                                     tasksColor[task[0]],
+                                     task[0],
+                                     task[1],
+                                     task[2],
+                                     marketCheck.toString()
+                                    );
+                        memTaskCells.push(taskCell);
+                    }
+				}
+            // Create Services text
+            var textServices = new createjs.Text(serviceText, backgroundTextStyle, csTextColor);
+            textServices.x = stage.canvas.width/2;      
+            textServices.textAlign = "center";
+            textServices.y = sTextY;
+            textServices.textBaseline = "alphabetic";
+            stage.addChild(textServices);
+            
+		}
+
+		function createTest(owner,status,plannedTaskId,row,col,x,y,color,type,tag,budget,marketCheck)
+		{
+			var test = testOrder;  // TODO test as an object w properties from project sheet: type, status, priority, etc
+            testOrder++;
+            iterationTests.push(test);
+            
+            var text = new createjs.Text();
+            
+            var container = new createjs.Container();
+            
+            // Create graphical rectangle of the container
+            var rect = new createjs.Shape();
+            
+            // TODO - might need to change to color and keep type for tags, etc
+            if((type >= 0) && (type<=9)) {
+                rect.graphics.beginFill(testsColor[type]);
+            } else {
+                rect.graphics.beginFill(testsColor[0]);
+            }
+	        rect.graphics.drawRect(0, 0, CELL_WIDTH, CELL_HEIGHT); 
+	        rect.graphics.endFill();
+
+            // Adding/linking a text to the container's rectangle
+            container.addChild(rect, text);
+            
+	        container.regX = CELL_WIDTH/2;
+	        container.regY = CELL_HEIGHT/2;
+            
+            container.owner = owner;    // email of owner
+            container.status = status;
+            container.plannedTaskId = plannedTaskId;
+            container.row = row;
+            container.col = col;
+	        container.x = x;
+	        container.y = y;
+            container.color = color;
+            container.name = tag+'_'+type;
+            container.type = type;
+            container.tag = tag;
+            container.budget = budget;
+            container.marketCheck = marketCheck;
+
+	        container.setBounds(container.regX,container.regY,CELL_WIDTH,CELL_HEIGHT);
+            
+            text.set({
+                text: container.tag,
+                color: "white",
+                textAlign: "center",
+                textBaseline: "middle",
+                x: CELL_WIDTH/2,
+                y: CELL_HEIGHT/2
+                });
+                
+	        stage.addChild(container);
+	        testCells.push(container);
+	    }
+        
+
+        function createTask(owner,status,plannedTestId,row,col,x,y,color,type,tag,price,marketCheck)
+		{
+            var task = taskOrder;  // TODO task as an object w properties from service sheet: type, availability, cost, etc
+            taskOrder++;
+            iterationTasks.push(task);           
+            
+            var text = new createjs.Text();
+            
+            var container = new createjs.Container();
+            
+            // Create graphical rectangle of the container
+			var rect = new createjs.Shape();
+            
+            // TODO - refactor color
+	        if((type >= 0) && (type<=9)) {
+                rect.graphics.beginFill(tasksColor[type]);
+            } else {
+                rect.graphics.beginFill(tasksColor[0]);
+            }
+	        rect.graphics.drawRect(0, 0, CELL_WIDTH, CELL_HEIGHT);
+	        rect.graphics.endFill();
+            
+            // Adding/linking a text to the container's rectangle
+            container.addChild(rect, text);
+
+	        container.regX = CELL_WIDTH/2;
+	        container.regY = CELL_HEIGHT/2;
+            
+            container.owner = owner;    // email of owner
+            container.status = status;
+            container.plannedTestId = plannedTestId;
+            container.row = row;
+            container.col = col;
+	        container.x = x;
+	        container.y = y;
+            container.color = color;
+            container.name = tag+'_'+type;
+            container.type = type;
+            container.tag = tag;
+            container.price = price;
+            container.marketCheck = marketCheck;
+
+	        container.setBounds(container.regX,container.regY,CELL_WIDTH,CELL_HEIGHT);
+            
+            text.set({
+                text: container.tag,
+                textAlign: "center",
+                textBaseline: "middle",
+                x: CELL_WIDTH/2,
+                y: CELL_HEIGHT/2
+                });
+            
+	        stage.addChild(container);
+	        taskCells.push(container);
+	    }
+
+		function destroyTestCell(container)
+		{
+			// createjs.Tween.get(container,{}).to({scaleX:0,scaleY:0}, 500)
+            // createjs.Tween.get(container,{}).to({scaleX:0.5,scaleY:0.5}, 500)
+            // createjs.Tween.get(container,{}).to({scaleX:0.1,scaleY:0.1,rotation:90}, 500)
+            createjs.Tween.get(container,{})
+                .to({scaleX:scaleTest,scaleY:scaleTest,rotation:(90 + test*planAngle),x:planX,y:planY}, 500);
+            test++;
+            // Prep values for next test
+            planX = planCircleX - planCircleR*Math.cos(test*planRad);
+            planY = planCircleY - planCircleR*Math.sin(test*planRad);
+
+			// setTimeout(removeCellFromScreen,30000,container);  // TODO - to force quick execution of plan while in attention span - 30000 = 30seconds ~ attention span
+		}
+
+		function destroyTaskCell(container)
+		{
+			// createjs.Tween.get(container,{}).to({scaleX:0,scaleY:0}, 500)
+            // createjs.Tween.get(container,{}).to({scaleX:0.5,scaleY:0.5}, 500)
+            // createjs.Tween.get(container,{}).to({scaleX:0.1,scaleY:0.1,rotation:90}, 500)
+            createjs.Tween.get(container,{})
+                .to({scaleX:scaleTask,scaleY:scaleTask,rotation:(90 + test*planAngle),x:planX,y:planY}, 500);
+            test++;
+            // Prep values for next test
+            planX = planCircleX - planCircleR*Math.cos(test*planRad);
+            planY = planCircleY - planCircleR*Math.sin(test*planRad);
+
+			// setTimeout(removeCellFromScreen,30000,container);  // TODO - to force quick execution of plan while in attention span - 30000 = 30seconds ~ attention span
+		}
+
+        
+		function removeCellFromScreen(container)
+		{
+			stage.removeChild(container)
+		}
+
+		function createBall()
+		{
+			ball = new createjs.Shape();
+			ball.graphics.beginFill(ballColor).drawCircle(0,0, BALL_RADIUS);
+			ball.x = paddle.x;
+			ball.y = paddle.y - PADDLE_HEIGHT/2  - BALL_RADIUS;
+			stage.addChild(ball);
+            
+			ball.up = true;
+			ball.right = true;
+			ball.xSpeed = 0;
+			ball.ySpeed = 0;
+			ball.lastX = 0;
+			ball.lastY = 0;
+            
+            // Additional ball fields to use in negotiating and planning a service deal
+            ball.sender = "";       // the test/project or task/service cell ids
+            ball.senderType = "";   // test/project/demand or task/service/offer - TODO - decide between i/o or p/s for project/service
+            ball.destination = "";  // some reference id, position, etc of the destination cell
+            ball.color = "";        // color of the last hitted cell
+            ball.message = "";      // data message for destination 
+            ball.command = "";      // command message for destination
+            
+            // TODO - add ball container to include on top of the ball the last collosion/senderType: 
+            // "i" (input) or "p" for project/tests 
+            // and "o" (output) or "s" for service/tasks
+		}
+        
+        // TODO - Change Ball to Message
+        function changeBallColor(color)
+        {
+            // Create a new ball with the new color and get all ball attributes
+            newball = new createjs.Shape();
+            newball.graphics.beginFill(color).drawCircle(0,0, BALL_RADIUS);
+            
+            newball.x = ball.x;
+            newball.y = ball.y;
+            
+            newball.up = ball.up;
+			newball.right = ball.right;
+			newball.xSpeed = ball.xSpeed;
+			newball.ySpeed = ball.ySpeed;
+			newball.lastX = ball.lastX;
+			newball.lastY = ball.lastY;
+            
+            // Additional ball fields to use in negotiating and planning a service deal
+            newball.sender      = ball.sender;       // the test/project or task/service cell ids
+            newball.senderType  = ball.senderType;   // test/project/demand or task/service/offer - TODO - decide between i/o or p/s for project/service
+            newball.destination = ball.destination;  // some reference id, position, etc of the destination cell
+            newball.color       = ball.color;        // color of the last hitted cell
+            newball.message     = ball.message;      // data message for destination 
+            newball.command     = ball.command;      // command message for destination
+            
+            stage.addChild(newball);
+            stage.removeChild(ball);
+            
+            // build back the ball with the new color
+            ball = new createjs.Shape();
+            ball.graphics.beginFill(color).drawCircle(0,0, BALL_RADIUS);
+            
+            ball.x = newball.x;
+            ball.y = newball.y;
+            
+            ball.up      = newball.up;
+			ball.right   = newball.right;
+			ball.xSpeed  = newball.xSpeed;
+			ball.ySpeed  = newball.ySpeed;
+			ball.lastX   = newball.lastX;
+			ball.lastY   = newball.lastY;
+            
+            // Additional ball fields to use in negotiating and planning a service deal
+            ball.sender      = newball.sender;       // the test/project or task/service cell ids
+            ball.senderType  = newball.senderType;   // test/project/demand or task/service/offer - TODO - decide between i/o or p/s for project/service
+            ball.destination = newball.destination;  // some reference id, position, etc of the destination cell
+            ball.color       = newball.color;        // color of the last hitted cell
+            ball.message     = newball.message;      // data message for destination 
+            ball.command     = newball.command;      // command message for destination            
+            
+            stage.addChild(ball);
+            stage.removeChild(newball);
+            
+        }
+
+        // TODO - Change Paddle to Director/Distributor/Market/Mart/Filter???
+		function createPaddle()
+		{
+			paddle = new createjs.Shape();
+		    paddle.width = PADDLE_WIDTH;
+		    paddle.height = PADDLE_HEIGHT;
+		    paddle.graphics.beginFill(paddleColor).drawRect(0, 0, paddle.width, paddle.height);
+		    paddle.x = stage.canvas.width/2-PADDLE_WIDTH/2;
+		    paddle.y = 470;       // stage.canvas.height*0.9;
+		    paddle.regX = PADDLE_WIDTH/2;
+	        paddle.regY = PADDLE_HEIGHT/2;
+		    paddle.setBounds(paddle.regX,paddle.regY,PADDLE_WIDTH,PADDLE_HEIGHT);
+		    stage.addChild(paddle);
+		}
+        
+        // L - Short Logger function
+        function L(text, param) {
+            console.log(' - Log: ' + text + ' = ' + param);
+        }
+        
+        
+	</script>
+</body>
+</html>
