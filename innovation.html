@@ -48,6 +48,9 @@
         const TX_MARKET_STOP = 5;      // For Dev - Nr of transactions/deals/hits after which the Market stops
         const TKS_STOP = 180;
         
+        const Y_SPEED = 10;             // originally is Y_SPEED = 5;
+        const HELIX_SPEED = 40000;
+        
         var tx = 0;     // For Dev - to count nr transactions / hits / collisions with cells of project / services
         var tks= 0;     // For Dev - to count nr ticks / calculations of canvas, etc
         
@@ -418,7 +421,7 @@
 						console.log("Start Game");
 						gameStarted = true; 
 						ball.xSpeed = 5; 
-						ball.ySpeed = 5;
+						ball.ySpeed = Y_SPEED;
 						ball.up = true;
 						ball.right = true;
                         // update textCentre
@@ -1315,7 +1318,7 @@
             
             // createjs.Tween.get(container,{}).to({scaleX:0,scaleY:0}, 500)
             // createjs.Tween.get(container,{}).to({scaleX:0.5,scaleY:0.5}, 500)
-            createjs.Tween.get(cellContainer,{}).to({scaleX:0.1,scaleY:0.1}, 10000)   
+            createjs.Tween.get(cellContainer,{}).to({scaleX:0.1,scaleY:0.1,alpha:0.1}, HELIX_SPEED); // x:planCircleX,y:planCircleY   
         }
         
         
@@ -1329,23 +1332,24 @@
             
             // TODO - ? rename container1 to dnaCell
             createjs.Tween.get(dnaContainer,{})
-                .to({scaleX:scaleTest,scaleY:scaleTest,rotation:(90 + test*planAngle),x:planX,y:planY}, 500);
+                .to({scaleX:scaleTest,scaleY:scaleTest,rotation:(90 + test*planAngle),x:planX,y:planY}, 500)
+                .to({x:planCircleX,y:planCircleY},HELIX_SPEED);
             
             var helixX = planCircleX - planCircleR*Math.cos(Math.PI + test*planRad);
             var helixY = planCircleY - planCircleR*Math.sin(Math.PI + test*planRad);
             
             // TODO - ? rename container2 to rnaCell
             createjs.Tween.get(rnaContainer,{})
-                .to({scaleX:scaleTest,scaleY:scaleTest,rotation:(90 + 180 + test*planAngle),x:helixX,y:helixY}, 500);
-                    
+                .to({scaleX:scaleTest,scaleY:scaleTest,rotation:(90 + 180 + test*planAngle),x:helixX,y:helixY}, 500)
+                .to({x:planCircleX,y:planCircleY},HELIX_SPEED);
             
             test++;
             // Prep values for next test
             planX = planCircleX - planCircleR*Math.cos(test*planRad);
             planY = planCircleY - planCircleR*Math.sin(test*planRad);
 
-            setTimeout(removeCellFromScreen,10000,dnaContainer);  // To create helix depth/rotation? animation
-            setTimeout(removeCellFromScreen,10000,rnaContainer);
+            setTimeout(removeCellFromScreen,HELIX_SPEED/2,dnaContainer);  // To create helix depth/rotation? animation
+            setTimeout(removeCellFromScreen,HELIX_SPEED/2,rnaContainer);
             
             // TODO - setTimeout to about nr cols x 1000ms = e.g. = 10 x 1000 = 10000
             // TODO - ? to force quick execution of plan while in attention span - 30000 = 30seconds ~ attention span
