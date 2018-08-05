@@ -1021,7 +1021,7 @@
 			}
 		}
 
-		// Renamed to createTestGrid and added iterationTests array 
+		// CreateTestGrid and added iterationTests array 
 		function createTestGrid()
 		{
 			for(var i = 0;i<problem_rows;i++)
@@ -1256,21 +1256,72 @@
 	        taskCells.push(container);
 	    }
 
-        // To simulate DNA Helix
-        function destroyPairCell(container1, container2)
-		{
-			// Create DNA, RNA connectors - for now simple rectangles perpendicular on the test/DNA and task/RNA cells
+        function createConnector(cellContainer) 
+        {
+        
+            // Create DNA/RNA connector container for: text + rect; then add it to container Cell - the test/DNA or task/RNA cell 
+            var text = new createjs.Text();
+            
+            var container = new createjs.Container();
+            
+            // Create graphical rectangle of the container
+            var rect = new createjs.Shape();
+            
+            // TODO - might need to change to color and keep type for tags, etc
+            rect.graphics.beginFill(cellContainer.color);
+
+            // TODO - refactor planCircleR as a constant
+            rect.graphics.drawRect(0, 0, planCircleR, CELL_HEIGHT*0.75); 
+            rect.graphics.endFill();
+
+            // Adding/linking the text to the container's rectangle
+            container.addChild(rect, text);
+            
+            container.rotation = -90;
+            
+            // container.regX = - CELL_HEIGHT / 2;
+            // Depending on cell type (DNA/RNA) we should add or subtract planCircleR and CELL_HEIGHT/2
+            // also the value of the text will depend on cellContainer: DNA script or RNA script tag =
+            // and textAlign will be left for DNA and right for RNA
+            // TODO - add conditional on cell type <<------------------------------------------<<<<< if cell type DNA/RNA
+            container.regY = -CELL_WIDTH/2 + 0.75*CELL_HEIGHT/2;     // for DNA Cell
+
+            // Experimental for now considering a DNA Cell - Dynamic Natural Activation Script
+            text.set({
+                text: "DNA | tag =",
+                color: "white",
+                textAlign: "left",
+                textBaseline: "middle",
+                x: planCircleR / 2,
+                y: 0.75*CELL_HEIGHT/2
+                });
+                
+            cellContainer.addChild(container);
+            
+            // stage.addChild(container);
             
             // createjs.Tween.get(container,{}).to({scaleX:0,scaleY:0}, 500)
             // createjs.Tween.get(container,{}).to({scaleX:0.5,scaleY:0.5}, 500)
-            // createjs.Tween.get(container,{}).to({scaleX:0.1,scaleY:0.1,rotation:90}, 500)
-            createjs.Tween.get(container1,{})
+            // createjs.Tween.get(container,{}).to({scaleX:0.1,scaleY:0.1,rotation:90}, 500)   
+        }
+        
+        
+        
+        // To simulate DNA Helix
+        function destroyPairCell(dnaContainer, rnaContainer)
+		{
+			// Create DNA, RNA connectors - for now simple rectangles perpendicular on the test/DNA and task/RNA cells
+            createConnector(dnaContainer);
+            
+            // TODO - ? rename container1 to dnaCell
+            createjs.Tween.get(dnaContainer,{})
                 .to({scaleX:scaleTest,scaleY:scaleTest,rotation:(90 + test*planAngle),x:planX,y:planY}, 500);
             
             var helixX = planCircleX - planCircleR*Math.cos(Math.PI + test*planRad);
             var helixY = planCircleY - planCircleR*Math.sin(Math.PI + test*planRad);
             
-            createjs.Tween.get(container2,{})
+            // TODO - ? rename container2 to rnaCell
+            createjs.Tween.get(rnaContainer,{})
                 .to({scaleX:scaleTest,scaleY:scaleTest,rotation:(90 + 180 + test*planAngle),x:helixX,y:helixY}, 500);
                     
             
@@ -1279,8 +1330,8 @@
             planX = planCircleX - planCircleR*Math.cos(test*planRad);
             planY = planCircleY - planCircleR*Math.sin(test*planRad);
 
-            setTimeout(removeCellFromScreen,10000,container1);  // To create helix depth/rotation? animation
-            setTimeout(removeCellFromScreen,10000,container2);
+            setTimeout(removeCellFromScreen,10000,dnaContainer);  // To create helix depth/rotation? animation
+            setTimeout(removeCellFromScreen,10000,rnaContainer);
             
             // TODO - setTimeout to about nr cols x 1000ms = e.g. = 10 x 1000 = 10000
             // TODO - ? to force quick execution of plan while in attention span - 30000 = 30seconds ~ attention span
