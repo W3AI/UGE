@@ -269,8 +269,11 @@
         var service_rows = 6;
         var service_cols = 10; 
         
-        var currentTestRow = 6;     // We start with the bottom of the test grid
-        var currentTaskRow = 1;
+        var currentTestRow = 6;             // We start with the bottom of the test grid
+        var cellsInCurrentTestRow = 10;
+        
+        var currentTaskRow = 1;             // We start at the top of the test grid
+        var cellsInCurrentTaskRow = 10;     // TODO - we might need an array of the num cells in each row ...
         
         var textCentre = '';
         
@@ -425,7 +428,7 @@
 						ball.up = true;
 						ball.right = true;
                         // update textCentre
-                        textCentre.text = 'plan';
+                        // textCentre.text = 'plan';
 					}
 		}
 
@@ -699,13 +702,28 @@
                         
                         
                         // Experimental !!!! - AUG 4 - Implementing DNA Helix animation / rotation <<------------<<<< DNA helix engine animation !!!
-                        
                         destroyPairCell(testCells[i], taskCells[ball.sender]);
                         
                         testCells.splice(i,1);
                         i--;
                         
                         taskCells.splice(ball.sender,1);
+                        
+                        cellsInCurrentTestRow--;
+                        // TODO - also reduce num cells in current task row 
+                        
+                        // Move to next Test Row when all cells are gone - TODO - function to add new rows for both test/Demand and task/Offer
+                        if(cellsInCurrentTestRow == 0) 
+                        {
+                            currentTestRow--;
+                            cellsInCurrentTestRow = 10;
+                            
+                            // also move to next TaskRow
+                            currentTaskRow++;
+                            cellsInCurrentTaskRow = 10;
+                        }
+                        
+                        // END - Experimental !!!! - AUG 4 - Implementing DNA Helix animation / rotation <<------------<<<< DNA helix engine animation !!!
                         
 //					    destroyTestCell(testCells[i]);
 //                        // TODO - more checking needed to confirm there is a deal / Tx - not just ball/msg coming from a task cell 
@@ -737,9 +755,9 @@
                     // gameStarted = false; // lives += 50; // init();
                     
                     testPlanReady = true;
-                    // update textCentre
                     
-                    textCentre.text = 'action';
+                    // update textCentre
+                    // textCentre.text = 'action';
                 }
                 
 			}
@@ -869,7 +887,7 @@
                     L('taskCells[i].status', taskCells[i].status);
                     
                     // Check if it is the current plan step 
-                    if( (taskCells[i].type == taskPlanStep.toString()) && testPlanReady && (memTaskCells[i].status == 'planned'))
+                    if( (taskCells[i].type == taskPlanStep.toString()) && testPlanReady && (memTaskCells[i].status == 'planned') && (taskCells[i].row == currentTaskRow))
                     {
                     
                         // ToDo - to add some more logic for taskCells: available or not etc, cost - to be done in spreadsheets
@@ -901,13 +919,18 @@
                     console.log("ball.senderType = " + ball.senderType);
 				}
                 
-                if(taskCells.length <= 50) 
+                // 50 - means just 10 task/RNA used cells - number could be 59-to-0 - when all tasks gone - no offer - BIG OPPORTUNITY!!!
+                // TODO - add function to add another row to the matrices of Demand and Offer
+                if(taskCells.length <= 49) 
                 {   
-                    taskPlanDone = true;
+                    // Aug 5 - Experimenting - before coding additional rows into the Demand and Offer matrices
+                    currentTestRow--;
+                    currentTaskRow++;
                     
-                    gameStarted = false;
-                    lives += 50;
-                    init();
+//                    taskPlanDone = true;                  
+//                    gameStarted = false;
+//                    lives += 50;
+//                    init();
                 }
 
 			}    // End Collision check with Service cells
