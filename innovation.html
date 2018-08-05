@@ -1259,7 +1259,9 @@
         // To simulate DNA Helix
         function destroyPairCell(container1, container2)
 		{
-			// createjs.Tween.get(container,{}).to({scaleX:0,scaleY:0}, 500)
+			// Create DNA, RNA connectors - for now simple rectangles perpendicular on the test/DNA and task/RNA cells
+            
+            // createjs.Tween.get(container,{}).to({scaleX:0,scaleY:0}, 500)
             // createjs.Tween.get(container,{}).to({scaleX:0.5,scaleY:0.5}, 500)
             // createjs.Tween.get(container,{}).to({scaleX:0.1,scaleY:0.1,rotation:90}, 500)
             createjs.Tween.get(container1,{})
@@ -1277,7 +1279,9 @@
             planX = planCircleX - planCircleR*Math.cos(test*planRad);
             planY = planCircleY - planCircleR*Math.sin(test*planRad);
 
-            // setTimeout(removeCellFromScreen,10000,container);  // To create helix depth/rotation? animation
+            setTimeout(removeCellFromScreen,10000,container1);  // To create helix depth/rotation? animation
+            setTimeout(removeCellFromScreen,10000,container2);
+            
             // TODO - setTimeout to about nr cols x 1000ms = e.g. = 10 x 1000 = 10000
             // TODO - ? to force quick execution of plan while in attention span - 30000 = 30seconds ~ attention span
 		}
