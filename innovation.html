@@ -103,8 +103,9 @@
 	        this.x = x;
 	        this.y = y;
             this.color = color;
-            this.name = tag+'_'+type;
-            this.type = type;
+            this.name = tag+'_'+type;   // TODO - refactor/rename to ? tag+'_'+drType
+            this.drType = 'D';          // D for dna, DNA, test, plan 
+            this.type = type;           // to be used for domains
             this.tag = tag;
             this.budget = budget;
             this.marketCheck = marketCheck;   
@@ -123,8 +124,9 @@
 	        this.x = x;
 	        this.y = y;
             this.color = color;
-            this.name = tag+'_'+type;
-            this.type = type;
+            this.name = tag+'_'+type;   // TODO - refactor/rename to ? tag+'_'+drType
+            this.drType = 'R';          // R for rna, RNA, task, exec 
+            this.type = type;           // to be used for domains
             this.tag = tag;
             this.price = price;
             this.marketCheck = marketCheck;           
@@ -1033,7 +1035,7 @@
                         // test type = value of tests[j][i]-1
                         // test id = tests[j][i]
                         // createTest(x,y,type,id) - type will be the index of the color and id the text in the cell
-                        // test[0] = color / id
+                        // test[0] = color / id / now it is type
                         // test[1] = change tag eg: - for demo could be just change or change(p) change - changeId - change1, change2, change3 
                         // test[2] = budget, price, etc
                         var test = tests[i][j].split('|');
@@ -1093,8 +1095,8 @@
                         // for now - later task type and id, etc will come from service spreadsheet via iterationTasks[]
                         // task type = value of tasks[j][i]-1
                         // task id = tasks[j][i]
-                        // createTest(x,y,type,id) - type will be the index of the color and id the text in the cell
-                        // task[0] = color id
+                        // createTask(x,y,type,id) - type will be the index of the color and id the text in the cell
+                        // task[0] = color id / now it is type
                         // task[1] = change tag eg: 
                         // task[2] = budget,price etc
                         var task = tasks[i][j].split('|');
@@ -1179,6 +1181,7 @@
 	        container.y = y;
             container.color = color;
             container.name = tag+'_'+type;
+            container.drType = 'D';             // D for DNA |  test | plan etc
             container.type = type;
             container.tag = tag;
             container.budget = budget;
@@ -1237,6 +1240,7 @@
 	        container.y = y;
             container.color = color;
             container.name = tag+'_'+type;
+            container.drType = 'R';                 // R for RNA |  task | exec etc
             container.type = type;
             container.tag = tag;
             container.price = price;
@@ -1278,31 +1282,40 @@
             container.addChild(rect, text);
             
             container.rotation = -90;
+            container.regY = -CELL_WIDTH/2 + 0.75*CELL_HEIGHT/2; 
             
             // container.regX = - CELL_HEIGHT / 2;
             // Depending on cell type (DNA/RNA) we should add or subtract planCircleR and CELL_HEIGHT/2
             // also the value of the text will depend on cellContainer: DNA script or RNA script tag =
             // and textAlign will be left for DNA and right for RNA
             // TODO - add conditional on cell type <<------------------------------------------<<<<< if cell type DNA/RNA
-            container.regY = -CELL_WIDTH/2 + 0.75*CELL_HEIGHT/2;     // for DNA Cell
-
-            // Experimental for now considering a DNA Cell - Dynamic Natural Activation Script
-            text.set({
-                text: "DNA | tag =",
-                color: "white",
-                textAlign: "left",
-                textBaseline: "middle",
-                x: planCircleR / 2,
-                y: 0.75*CELL_HEIGHT/2
-                });
+            
+            if (cellContainer.drType == 'D')        // for DNA Cell
+            {        
+                text.set({
+                    text: "DNA | tag =",
+                    color: "white",
+                    textAlign: "left",
+                    textBaseline: "middle",
+                    x: planCircleR / 2,
+                    y: 0.75*CELL_HEIGHT/2
+                    });   
+            } else {                                // for RNA Cell    
+                text.set({
+                    text: "RNA | tag =",
+                    color: "black",
+                    textAlign: "left",
+                    textBaseline: "middle",
+                    x: planCircleR / 2,
+                    y: 0.75*CELL_HEIGHT/2
+                    });      
+            }
                 
             cellContainer.addChild(container);
             
-            // stage.addChild(container);
-            
             // createjs.Tween.get(container,{}).to({scaleX:0,scaleY:0}, 500)
             // createjs.Tween.get(container,{}).to({scaleX:0.5,scaleY:0.5}, 500)
-            // createjs.Tween.get(container,{}).to({scaleX:0.1,scaleY:0.1,rotation:90}, 500)   
+            createjs.Tween.get(cellContainer,{}).to({scaleX:0.1,scaleY:0.1}, 10000)   
         }
         
         
@@ -1312,6 +1325,7 @@
 		{
 			// Create DNA, RNA connectors - for now simple rectangles perpendicular on the test/DNA and task/RNA cells
             createConnector(dnaContainer);
+            createConnector(rnaContainer);
             
             // TODO - ? rename container1 to dnaCell
             createjs.Tween.get(dnaContainer,{})
