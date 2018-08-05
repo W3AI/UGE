@@ -1320,6 +1320,8 @@
                 
             cellContainer.addChild(container);
             
+            stage.setChildIndex( cellContainer, stage.getNumChildren()-1);
+            
             // createjs.Tween.get(container,{}).to({scaleX:0,scaleY:0}, 500)
             // createjs.Tween.get(container,{}).to({scaleX:0.5,scaleY:0.5}, 500)
             createjs.Tween.get(cellContainer,{}).to({scaleX:0.1,scaleY:0.1,alpha:0.1}, HELIX_SPEED); // x:planCircleX,y:planCircleY   
@@ -1331,8 +1333,8 @@
         function destroyPairCell(dnaContainer, rnaContainer)
 		{
 			// Create DNA, RNA connectors - for now simple rectangles perpendicular on the test/DNA and task/RNA cells
-            createConnector(dnaContainer);
             createConnector(rnaContainer);
+            createConnector(dnaContainer);
             
             // TODO - ? rename container1 to dnaCell
             createjs.Tween.get(dnaContainer,{})
