@@ -1,6 +1,7 @@
-[Play the UGE Community Game](game.html)
+[Join UGE Innovators Teams](innovation.html) 
+w3ai.github.io/UGE/innovation.html
 
-# UGE Community Story
+# UGE Teams Story
 
 Remember when Elon Musk said that very likely we live in a simulation computer of an advanced civilization?
 
