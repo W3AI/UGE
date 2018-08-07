@@ -10,7 +10,7 @@
     background-color: whitesmoke;
     margin: 0;
     }
-    #gameWrapper{
+    #ugeWrapper{
     position: absolute;
     }
     canvas, img{
@@ -23,14 +23,18 @@
 	<script src="https://code.createjs.com/createjs-2015.05.21.min.js"></script>
 </head>
 <body onload="init();">
-    <div id="gameWrapper">
-        <!-- <img id="bg" src="img/bg.jpg"> -->
+    <div id="ugeWrapper">
         <canvas id="canvas" width="550" height="700" style="border:1px solid #d3d3d3;"></canvas>
     </div>
-	<script>
+    
+<script>
         
-        // -- (( UGE Community Circles / W3AI.net )) --
-        // Stefan Ianta - July 2018 - MIT License 
+// -- (( UGE Office Innovation Search Engine )) --
+// Stefan Ianta - Aug 2018 - MIT License 
+/*
+ * Copyright (c) Ianta Labs. All rights reserved. Licensed under the MIT license.
+ * See LICENSE in the github project root for license information. https://github.com/W3AI/UGE
+ */
         
 		const PADDING_TOP = 13;
         const PADDING_BOTTOM = 0;
@@ -342,7 +346,7 @@
         
     function resizeGame() {
         var nTop, nLeft, scale;
-        var gameWrapper = document.getElementById('gameWrapper');
+        var ugeWrapper = document.getElementById('ugeWrapper');
         // var bg = document.getElementById('bg');
         var w = window.innerWidth;
         var h = window.innerHeight;
@@ -354,15 +358,15 @@
             nWidth = nHeight * widthToHeight;
             scale = nWidth / canvas.width;
             nLeft = (w / 2) - (nWidth / 2);
-            gameWrapper.style.left = (nLeft) + "px";
-            gameWrapper.style.top = "0px";
+            ugeWrapper.style.left = (nLeft) + "px";
+            ugeWrapper.style.top = "0px";
         }
         else {
             nHeight = nWidth / widthToHeight;
             scale = nHeight / canvas.height;
             nTop = (h / 2) - (nHeight / 2);
-            gameWrapper.style.top = (nTop) + "px";
-            gameWrapper.style.left = "0px";
+            ugeWrapper.style.top = (nTop) + "px";
+            ugeWrapper.style.left = "0px";
         }
         canvas.setAttribute("style", "-webkit-transform:scale(" + scale + ")");
         // bg.setAttribute("style", "-webkit-transform:scale(" + scale + ")");
