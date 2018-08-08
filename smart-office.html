@@ -725,15 +725,17 @@
                         
                         cellsInCurrentTestRow--;
                         // TODO - also reduce num cells in current task row 
-                        
+                        L('>>> cellsInCurrentTestRow: ', cellsInCurrentTestRow);
                         // Move to next Test Row when all cells are gone - TODO - function to add new rows for both test/Demand and task/Offer
                         if(cellsInCurrentTestRow <= 0) 
                         {
                             currentTestRow--;
+                            L('>>> currentTestRow: ', currentTestRow);
                             cellsInCurrentTestRow = 10;
                             
                             // also move to next TaskRow
                             currentTaskRow++;
+                            L('>>> currentTaskRow: ', currentTaskRow);
                             cellsInCurrentTaskRow = 10;
                         }
                         
@@ -778,8 +780,7 @@
                 
 			}
             
-            // Added the collision w service cells
-            // Change services to taskCells
+            // Check collision w task/service cells
 			for(var i=0;i<taskCells.length;i++)
 			{
 				if( checkCollision(ball,taskCells[i]) )
@@ -821,7 +822,9 @@
                         // Calculate indexes of cells in the current test row based on currentTestRow and k = col from marketCheckArray from memTaskCells
                         // if available && unchecked/updated - include it in the sorting array
                         // TODO - UPDATE test/task cells on 'available' and '!planned' <<-------------------------------------<<<<<
-                        if((memTestCells[(currentTestRow-1)*problem_cols + k].status == '!planned') && (marketCheckArray[k] == 'u'))
+                        var testCellId = (currentTestRow-1)*problem_cols + k;
+                        L('>>> testCellId = ', testCellId);
+                        if((memTestCells[testCellId].status == '!planned') && (marketCheckArray[k] == 'u'))
                         {
                            // add k, price
                            testRow.push( [ k, memTestCells[(currentTestRow-1)*problem_cols + k].budget ] );
@@ -955,6 +958,8 @@
 			if(checkCollision(ball,paddle))
 			{
 				newBallXSpeedAfterCollision(ball,paddle);
+                // update ball sender field
+                ball.sender = '-1';
 			}
 
 			//Check if we've reached the walls
@@ -1457,7 +1462,7 @@
 			ball.lastY = 0;
             
             // Additional ball fields to use in negotiating and planning a service deal
-            ball.sender = "-1";     // the test/project or task/service cell ids; -1 for initial user paddle
+            ball.sender = "-1";     // the test/project or task/service cell ids; -1 for initial user paddle and whenever hitting used paddle
             ball.senderType = "";   // test/project/demand or task/service/offer - TODO - decide between i/o or p/s for project/service
             ball.destination = "";  // some reference id, position, etc of the destination cell
             ball.color = "";        // color of the last hitted cell
