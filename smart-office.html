@@ -959,7 +959,7 @@
 			{
 				newBallXSpeedAfterCollision(ball,paddle);
                 // update ball sender field
-                ball.sender = '-1';
+                ball.sender = -1;
 			}
 
 			//Check if we've reached the walls
@@ -1462,7 +1462,7 @@
 			ball.lastY = 0;
             
             // Additional ball fields to use in negotiating and planning a service deal
-            ball.sender = "-1";     // the test/project or task/service cell ids; -1 for initial user paddle and whenever hitting used paddle
+            ball.sender = -1;     // the test/project or task/service cell ids; -1 for initial user paddle and whenever hitting used paddle
             ball.senderType = "";   // test/project/demand or task/service/offer - TODO - decide between i/o or p/s for project/service
             ball.destination = "";  // some reference id, position, etc of the destination cell
             ball.color = "";        // color of the last hitted cell
