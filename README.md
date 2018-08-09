@@ -1,4 +1,4 @@
-[Join UGE Innovators Teams](innovation.html) 
+[Join UGE Office Teams](innovation.html) 
 w3ai.github.io/UGE/innovation.html
 
 # UGE Teams Story
