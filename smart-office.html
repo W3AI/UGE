@@ -170,8 +170,6 @@
         var testPlanReady = false;      // when testPlanReady is true - we can start execution of plan
         var testPlanStep = 0;
         
-        var planed  = [1,2,3,4,5,6,7,8,9,10]
-        
         var tasks = [
                      ['0|ask RNA|1','1|ask RNA|2','2|ask RNA|3','3|ask RNA|4','4|ask RNA|5','5|ask RNA|6','6|ask RNA|7','7|ask RNA|8','8|ask RNA|9','9|ask RNA|10'],
                      ['0|ask RNA|1','1|ask RNA|2','2|ask RNA|3','3|ask RNA|4','4|ask RNA|5','5|ask RNA|6','6|ask RNA|7','7|ask RNA|8','8|ask RNA|9','9|ask RNA|10'],
@@ -710,10 +708,10 @@
                         // i should be = to (currentTestRow-1)*problem_cols + col - 1
                         console.log('??? ---  i = ' + i + ' ?= ' + ((currentTestRow-1)*problem_cols + col - 1) + ' = (currentTestRow-1)*problem_cols + col - 1');
                         
-                        L('i= ', i);
-                        L('testCells[i]: ', testCells[i]);
-                        L('ball.sender: ', ball.sender);
-                        L('taskCells[ball.sender]: ', taskCells[ball.sender])
+                        L('i', i);
+                        L('testCells[i].col', testCells[i].col);
+                        L('ball.sender', ball.sender);
+                        L('taskCells[ball.sender]', taskCells[ball.sender])
                         
                         // Experimental !!!! - AUG 4 - Implementing DNA Helix animation / rotation <<------------<<<< DNA helix engine animation !!!
                         destroyPairCell(testCells[i], taskCells[ball.sender]);
@@ -799,6 +797,7 @@
                     var row = taskCells[i].row;
                     var col = taskCells[i].col;
                     console.log('taskCell row: ' + row + ' & col: ' + col);
+                    L('------>>> taskCells[i] = ',taskCells[i]);
                     
                     var marketCheck      = taskCells[i].marketCheck;
                     var marketCheckArray = marketCheck.split(',');
@@ -906,7 +905,9 @@
                     L('taskCells[i].status', taskCells[i].status);
                     
                     // Check if it is the current plan step 
-                    if( (taskCells[i].type == taskPlanStep.toString()) && testPlanReady && (memTaskCells[i].status == 'planned') && (taskCells[i].row == currentTaskRow))
+                    // if( (taskCells[i].type == taskPlanStep.toString()) && testPlanReady && (memTaskCells[i].status == 'planned') && (taskCells[i].row == currentTaskRow))
+                    
+                    if( taskCells[i].row == currentTaskRow )
                     {
                     
                         // ToDo - to add some more logic for taskCells: available or not etc, cost - to be done in spreadsheets
@@ -917,15 +918,20 @@
 					    // destroyTaskCell(taskCells[i]);
                         
                         // Experimental !!!! - AUG 4 - Implementing DNA Helix animation / rotation <<------------<<<< DNA helix engine animation !!!
-					    destroyTaskCell(taskCells[i]);
-                        // TODO - more checking needed to confirm there is a deal / Tx - not just ball/msg coming from a task cell 
-                        if(ball.senderType == 'DNA') {
-                            destroyTestCell(testCell[ball.sender]);
-                        }    
-                        // ball.sender - To get Id of counterpart Deal/Tx Cell from ball/message
-                    
-					    taskCells.splice(i,1);
+                        destroyPairCell(taskCells[i], testCells[ball.sender]);
+                        
+                        taskCells.splice(i,1);
 					    i--;
+                        
+                        testCells.splice(ball.sender,1);
+                        
+                        
+					    // destroyTaskCell(taskCells[i]);
+                        // TODO - more checking needed to confirm there is a deal / Tx - not just ball/msg coming from a task cell 
+//                        if(ball.senderType == 'DNA') {
+//                            destroyTestCell(testCell[ball.sender]);
+//                        }    
+                        // ball.sender - To get Id of counterpart Deal/Tx Cell from ball/message
                     
                         taskPlanStep++;
                     }
