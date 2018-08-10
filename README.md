@@ -1,7 +1,9 @@
-[Join UGE Office Teams](innovation.html) 
-w3ai.github.io/UGE/innovation.html
+[Play UGE Agile Teams](w3ai.github.io/UGE/smart-office.html) 
+w3ai.github.io/UGE/smart-office.html
 
-# UGE Teams Story
+[Evo-Devo - The DNA DevOps](https://en.wikipedia.org/wiki/Evolutionary_developmental_biology)
+
+# UGE Agile Teams Story
 
 Remember when Elon Musk said that very likely we live in a simulation computer of an advanced civilization?
 
