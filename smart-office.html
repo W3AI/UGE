@@ -146,12 +146,12 @@
         
         // TODO - first replace the cells in the array with pipe | delimited strings for Color|tag|price=Budget/nr functionalities * priorities, etc
          var tests = [
-                     ['0|bid DNA|1','1|bid DNA|2','2|bid DNA|3','3|bid DNA|4','4|bid DNA|5','5|bid DNA|6','6|bid DNA|7','7|bid DNA|8','8|bid DNA|9','9|bid DNA|10'],
-                     ['0|bid DNA|1','1|bid DNA|2','2|bid DNA|3','3|bid DNA|4','4|bid DNA|5','5|bid DNA|6','6|bid DNA|7','7|bid DNA|8','8|bid DNA|9','5|bid DNA|6'],
-                     ['0|bid DNA|1','1|bid DNA|2','2|bid DNA|3','3|bid DNA|4','4|bid DNA|5','5|bid DNA|6','6|bid DNA|7','7|bid DNA|8','8|bid DNA|9','9|bid DNA|5'],
-                     ['0|bid DNA|1','1|bid DNA|2','3|bid DNA|4','3|bid DNA|4','4|bid DNA|5','5|bid DNA|6','6|bid DNA|7','7|bid DNA|8','8|bid DNA|9','9|bid DNA|10'],
-                     ['5|bid DNA|6','3|bid DNA|4','2|bid DNA|3','3|bid DNA|4','8|bid DNA|9','5|bid DNA|6','6|bid DNA|7','7|bid DNA|8','8|bid DNA|9','1|bid DNA|2'],
-                     ['0|bid DNA|10','1|bid DNA|9','2|bid DNA|8','3|bid DNA|7','4|bid DNA|6','5|bid DNA|5','6|bid DNA|4','7|bid DNA|3','8|bid DNA|2','9|bid DNA|1']
+                     ['0|biz bid|1','1|biz bid|2','2|biz bid|3','3|biz bid|4','4|biz bid|5','5|biz bid|6','6|biz bid|7','7|biz bid|8','8|biz bid|9','9|biz bid|10'],
+                     ['0|biz bid|1','1|biz bid|2','2|biz bid|3','3|biz bid|4','4|biz bid|5','5|biz bid|6','6|biz bid|7','7|biz bid|8','8|biz bid|9','5|biz bid|6'],
+                     ['0|biz bid|1','1|biz bid|2','2|biz bid|3','3|biz bid|4','4|biz bid|5','5|biz bid|6','6|biz bid|7','7|biz bid|8','8|biz bid|9','9|biz bid|5'],
+                     ['0|biz bid|1','1|biz bid|2','3|biz bid|4','3|biz bid|4','4|biz bid|5','5|biz bid|6','6|biz bid|7','7|biz bid|8','8|biz bid|9','9|biz bid|10'],
+                     ['5|biz bid|6','3|biz bid|4','2|biz bid|3','3|biz bid|4','8|biz bid|9','5|biz bid|6','6|biz bid|7','7|biz bid|8','8|biz bid|9','1|biz bid|2'],
+                     ['0|biz bid|10','1|biz bid|9','2|biz bid|8','3|biz bid|7','4|biz bid|6','5|biz bid|5','6|biz bid|4','7|biz bid|3','8|biz bid|2','9|biz bid|1']
                     ]; 
         
         var testsColor = [
@@ -171,12 +171,12 @@
         var testPlanStep = 0;
         
         var tasks = [
-                     ['0|ask RNA|1','1|ask RNA|2','2|ask RNA|3','3|ask RNA|4','4|ask RNA|5','5|ask RNA|6','6|ask RNA|7','7|ask RNA|8','8|ask RNA|9','9|ask RNA|10'],
-                     ['0|ask RNA|1','1|ask RNA|2','2|ask RNA|3','3|ask RNA|4','4|ask RNA|5','5|ask RNA|6','6|ask RNA|7','7|ask RNA|8','8|ask RNA|9','9|ask RNA|10'],
-                     ['0|ask RNA|1','1|ask RNA|2','2|ask RNA|3','3|ask RNA|4','4|ask RNA|5','5|ask RNA|6','6|ask RNA|7','7|ask RNA|8','8|ask RNA|9','9|ask RNA|10'],
-                     ['0|ask RNA|1','1|ask RNA|2','2|ask RNA|3','3|ask RNA|4','4|ask RNA|5','5|ask RNA|6','6|ask RNA|7','7|ask RNA|8','8|ask RNA|9','9|ask RNA|10'],
-                     ['0|ask RNA|1','1|ask RNA|2','2|ask RNA|3','3|ask RNA|4','4|ask RNA|5','5|ask RNA|6','6|ask RNA|7','7|ask RNA|8','8|ask RNA|9','9|ask RNA|10'],
-                     ['0|ask RNA|1','1|ask RNA|2','2|ask RNA|3','3|ask RNA|4','4|ask RNA|5','5|ask RNA|6','6|ask RNA|7','7|ask RNA|8','8|ask RNA|9','9|ask RNA|10']
+                     ['0|ops ask|1','1|ops ask|2','2|ops ask|3','3|ops ask|4','4|ops ask|5','5|ops ask|6','6|ops ask|7','7|ops ask|8','8|ops ask|9','9|ops ask|10'],
+                     ['0|ops ask|1','1|ops ask|2','2|ops ask|3','3|ops ask|4','4|ops ask|5','5|ops ask|6','6|ops ask|7','7|ops ask|8','8|ops ask|9','9|ops ask|10'],
+                     ['0|ops ask|1','1|ops ask|2','2|ops ask|3','3|ops ask|4','4|ops ask|5','5|ops ask|6','6|ops ask|7','7|ops ask|8','8|ops ask|9','9|ops ask|10'],
+                     ['0|ops ask|1','1|ops ask|2','2|ops ask|3','3|ops ask|4','4|ops ask|5','5|ops ask|6','6|ops ask|7','7|ops ask|8','8|ops ask|9','9|ops ask|10'],
+                     ['0|ops ask|1','1|ops ask|2','2|ops ask|3','3|ops ask|4','4|ops ask|5','5|ops ask|6','6|ops ask|7','7|ops ask|8','8|ops ask|9','9|ops ask|10'],
+                     ['0|ops ask|1','1|ops ask|2','2|ops ask|3','3|ops ask|4','4|ops ask|5','5|ops ask|6','6|ops ask|7','7|ops ask|8','8|ops ask|9','9|ops ask|10']
                     ];
         
         var tasksColor = [
@@ -219,10 +219,10 @@
         // SI: Jul 13, 2018
         // ToDo - Add Second text like: Match World's Top Challenges with World's Top Services
         // or          Match World's Top Challenges to your Top Services
-        var repoText = "clone DNA engine @ github.com/W3AI/UGE";            // UGE-community.firebaseapp.com | "UGE-Teams.W3AI.net";
+        var repoText = "clone web neuron DNA @github.com/W3AI/TeamHub";            // UGE-community.firebaseapp.com | "UGE-Teams.W3AI.net";
         var repoURL = "https://github.com/W3AI/UGE";
         var repoTextStyle = "16px Arial";
-        var repoTextX = 220;
+        var repoTextX = 167;
         var repoTextY = 514;
         var challangeText = "service demand";
         var cTextX = 135;
@@ -235,7 +235,7 @@
         var bgTxtUx = 61;
         var bgTxtUy = 430;          // 353; - is for central horizontal text mddle of 'U' and on middle line of 'E'
         
-        var bgTxtG  = "genetic";       // 'start' ?
+        var bgTxtG  = "game";       // 'start' ?
         var bgTxtGx = 255;          // Should this be textAlign Center?
         
         var bgTxtE  = "engine";
@@ -254,7 +254,7 @@
         var bgTextX = 205;
         var bgTextY = 360;
         
-        var scoreTextX = 10;
+        var scoreTextX = 2;
         var scoreTextY = 500;
         
         var paddleColor = "#fff";
@@ -396,8 +396,8 @@
             bgTxtU.textBaseline = "alphabetic";
             stage.addChild(bgTxtU);
   
-            bgTxtG = new createjs.Text('genetic', repoTextStyle, 'whitesmoke');        //  'game' | 'grammar' | 'genetic'
-            bgTxtG.x = bgTxtGx - 4;
+            bgTxtG = new createjs.Text('game', repoTextStyle, 'whitesmoke');        //  'game' | 'grammar' | 'genetic'
+            bgTxtG.x = bgTxtGx + 2;
             bgTxtG.y = bgTxtUy + 2;
             bgTxtG.textBaseline = "alphabetic";
             stage.addChild(bgTxtG);
