@@ -146,12 +146,12 @@
         
         // TODO - first replace the cells in the array with pipe | delimited strings for Color|tag|price=Budget/nr functionalities * priorities, etc
          var tests = [
-                     ['0|biz bid|1','1|biz bid|2','2|biz bid|3','3|biz bid|4','4|biz bid|5','5|biz bid|6','6|biz bid|7','7|biz bid|8','8|biz bid|9','9|biz bid|10'],
-                     ['0|biz bid|1','1|biz bid|2','2|biz bid|3','3|biz bid|4','4|biz bid|5','5|biz bid|6','6|biz bid|7','7|biz bid|8','8|biz bid|9','5|biz bid|6'],
-                     ['0|biz bid|1','1|biz bid|2','2|biz bid|3','3|biz bid|4','4|biz bid|5','5|biz bid|6','6|biz bid|7','7|biz bid|8','8|biz bid|9','9|biz bid|5'],
-                     ['0|biz bid|1','1|biz bid|2','3|biz bid|4','3|biz bid|4','4|biz bid|5','5|biz bid|6','6|biz bid|7','7|biz bid|8','8|biz bid|9','9|biz bid|10'],
-                     ['5|biz bid|6','3|biz bid|4','2|biz bid|3','3|biz bid|4','8|biz bid|9','5|biz bid|6','6|biz bid|7','7|biz bid|8','8|biz bid|9','1|biz bid|2'],
-                     ['0|biz bid|10','1|biz bid|9','2|biz bid|8','3|biz bid|7','4|biz bid|6','5|biz bid|5','6|biz bid|4','7|biz bid|3','8|biz bid|2','9|biz bid|1']
+                     ['0|job       bid|1','1|job       bid|2','2|job       bid|3','3|job       bid|4','4|job       bid|5','5|job       bid|6','6|job       bid|7','7|job       bid|8','8|job       bid|9','9|job       bid|10'],
+                     ['0|job       bid|1','1|job       bid|2','2|job       bid|3','3|job       bid|4','4|job       bid|5','5|job       bid|6','6|job       bid|7','7|job       bid|8','8|job       bid|9','5|job       bid|6'],
+                     ['0|job       bid|1','1|job       bid|2','2|job       bid|3','3|job       bid|4','4|job       bid|5','5|job       bid|6','6|job       bid|7','7|job       bid|8','8|job       bid|9','9|job       bid|5'],
+                     ['0|job       bid|1','1|job       bid|2','3|job       bid|4','3|job       bid|4','4|job       bid|5','5|job       bid|6','6|job       bid|7','7|job       bid|8','8|job       bid|9','9|job       bid|10'],
+                     ['5|job       bid|6','3|job       bid|4','2|job       bid|3','3|job       bid|4','8|job       bid|9','5|job       bid|6','6|job       bid|7','7|job       bid|8','8|job       bid|9','1|job       bid|2'],
+                     ['0|job       bid|10','1|job       bid|9','2|job       bid|8','3|job       bid|7','4|job       bid|6','5|job       bid|5','6|job       bid|4','7|job       bid|3','8|job       bid|2','9|job       bid|1']
                     ]; 
         
         var testsColor = [
@@ -171,12 +171,12 @@
         var testPlanStep = 0;
         
         var tasks = [
-                     ['0|ops ask|1','1|ops ask|2','2|ops ask|3','3|ops ask|4','4|ops ask|5','5|ops ask|6','6|ops ask|7','7|ops ask|8','8|ops ask|9','9|ops ask|10'],
-                     ['0|ops ask|1','1|ops ask|2','2|ops ask|3','3|ops ask|4','4|ops ask|5','5|ops ask|6','6|ops ask|7','7|ops ask|8','8|ops ask|9','9|ops ask|10'],
-                     ['0|ops ask|1','1|ops ask|2','2|ops ask|3','3|ops ask|4','4|ops ask|5','5|ops ask|6','6|ops ask|7','7|ops ask|8','8|ops ask|9','9|ops ask|10'],
-                     ['0|ops ask|1','1|ops ask|2','2|ops ask|3','3|ops ask|4','4|ops ask|5','5|ops ask|6','6|ops ask|7','7|ops ask|8','8|ops ask|9','9|ops ask|10'],
-                     ['0|ops ask|1','1|ops ask|2','2|ops ask|3','3|ops ask|4','4|ops ask|5','5|ops ask|6','6|ops ask|7','7|ops ask|8','8|ops ask|9','9|ops ask|10'],
-                     ['0|ops ask|1','1|ops ask|2','2|ops ask|3','3|ops ask|4','4|ops ask|5','5|ops ask|6','6|ops ask|7','7|ops ask|8','8|ops ask|9','9|ops ask|10']
+                     ['0|ops       ask|1','1|ops       ask|2','2|ops       ask|3','3|ops       ask|4','4|ops       ask|5','5|ops       ask|6','6|ops       ask|7','7|ops       ask|8','8|ops       ask|9','9|ops       ask|10'],
+                     ['0|ops       ask|1','1|ops       ask|2','2|ops       ask|3','3|ops       ask|4','4|ops       ask|5','5|ops       ask|6','6|ops       ask|7','7|ops       ask|8','8|ops       ask|9','9|ops       ask|10'],
+                     ['0|ops       ask|1','1|ops       ask|2','2|ops       ask|3','3|ops       ask|4','4|ops       ask|5','5|ops       ask|6','6|ops       ask|7','7|ops       ask|8','8|ops       ask|9','9|ops       ask|10'],
+                     ['0|ops       ask|1','1|ops       ask|2','2|ops       ask|3','3|ops       ask|4','4|ops       ask|5','5|ops       ask|6','6|ops       ask|7','7|ops       ask|8','8|ops       ask|9','9|ops       ask|10'],
+                     ['0|ops       ask|1','1|ops       ask|2','2|ops       ask|3','3|ops       ask|4','4|ops       ask|5','5|ops       ask|6','6|ops       ask|7','7|ops       ask|8','8|ops       ask|9','9|ops       ask|10'],
+                     ['0|ops       ask|1','1|ops       ask|2','2|ops       ask|3','3|ops       ask|4','4|ops       ask|5','5|ops       ask|6','6|ops       ask|7','7|ops       ask|8','8|ops       ask|9','9|ops       ask|10']
                     ];
         
         var tasksColor = [
@@ -219,15 +219,15 @@
         // SI: Jul 13, 2018
         // ToDo - Add Second text like: Match World's Top Challenges with World's Top Services
         // or          Match World's Top Challenges to your Top Services
-        var repoText = "clone web neuron DNA @github.com/W3AI/TeamHub";            // UGE-community.firebaseapp.com | "UGE-Teams.W3AI.net";
+        var repoText = "clone market neurons @github.com/W3AI/TeamHub";            // UGE-community.firebaseapp.com | "UGE-Teams.W3AI.net";
         var repoURL = "https://github.com/W3AI/UGE";
         var repoTextStyle = "16px Arial";
-        var repoTextX = 167;
+        var repoTextX = 180;
         var repoTextY = 514;
-        var challangeText = "service demand";
+        var challangeText = "jobs demand";
         var cTextX = 135;
         var cTextY = 103;
-        var serviceText   = "service  offers";
+        var serviceText   = "service offers";
         var sTextX = 165;
         var sTextY = 640;
         
@@ -396,8 +396,8 @@
             bgTxtU.textBaseline = "alphabetic";
             stage.addChild(bgTxtU);
   
-            bgTxtG = new createjs.Text('game', repoTextStyle, 'whitesmoke');        //  'game' | 'grammar' | 'genetic'
-            bgTxtG.x = bgTxtGx + 2;
+            bgTxtG = new createjs.Text('genes', repoTextStyle, 'whitesmoke');        //  'game' | 'grammar' | 'genetic'
+            bgTxtG.x = bgTxtGx;
             bgTxtG.y = bgTxtUy + 2;
             bgTxtG.textBaseline = "alphabetic";
             stage.addChild(bgTxtG);
@@ -1219,8 +1219,15 @@
 	        rect.graphics.drawRect(0, 0, CELL_WIDTH, CELL_HEIGHT); 
 	        rect.graphics.endFill();
 
+            var playerIcon = new createjs.Bitmap('img/icon_player.png');
+            playerIcon.x = (CELL_WIDTH - 16) / 2;
+            playerIcon.y = (CELL_HEIGHT - 21) / 2;
+            
             // Adding/linking a text to the container's rectangle
-            container.addChild(rect, text);
+            // container.addChild(rect, text);
+            container.addChild(rect);
+            container.addChild(playerIcon);
+            container.addChild(text);
             
 	        container.regX = CELL_WIDTH/2;
 	        container.regY = CELL_HEIGHT/2;
@@ -1278,8 +1285,15 @@
 	        rect.graphics.drawRect(0, 0, CELL_WIDTH, CELL_HEIGHT);
 	        rect.graphics.endFill();
             
+            var playerIcon = new createjs.Bitmap('img/icon_player.png');
+            playerIcon.x = (CELL_WIDTH - 16) / 2;
+            playerIcon.y = (CELL_HEIGHT - 21) / 2;
+            
             // Adding/linking a text to the container's rectangle
-            container.addChild(rect, text);
+            // container.addChild(rect, text);
+            container.addChild(rect);
+            container.addChild(playerIcon);
+            container.addChild(text);
 
 	        container.regX = CELL_WIDTH/2;
 	        container.regY = CELL_HEIGHT/2;
