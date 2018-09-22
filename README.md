@@ -1,5 +1,5 @@
-[Play UGE Agile Teams](w3ai.github.io/UGE/smart-office.html) 
-w3ai.github.io/UGE/smart-office.html
+[Play UGE Agile Teams](smart-office.html) or 
+[Set your Agile Teams](https://teamhub.w3ai.net)
 
 [Evo-Devo - The DNA DevOps](https://en.wikipedia.org/wiki/Evolutionary_developmental_biology)
 
@@ -56,3 +56,8 @@ My progress to building proof of concepts for larger scope UGEs can be found her
 [Halifax - Algorithmic Innovations Group](https://www.meetup.com/HalifaxAIG/)
 
 enough said - now back to coding those UGE DNA scripts ...
+
+## ToDo
+- [x] Build Agile Teams App: [Agile Teams](https://teamhub.w3ai.net)
+- [ ] Load English, Chinese, Hindi, Spanish, Arabic, Russian etc genetic languages
+- [ ] Fireup the Internet Brain
